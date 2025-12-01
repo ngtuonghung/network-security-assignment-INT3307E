@@ -1,0 +1,355 @@
+% !TEX program = xelatex
+\documentclass{report}
+\usepackage[fontsize=11pt]{scrextend}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Custom numbering for sections and subsections
+\renewcommand{\thesection}{\Roman{section}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[a4paper,top=1.5cm,bottom=1.5cm,left=1.5cm,right=1.5cm,marginparwidth=1.5cm]{geometry}
+
+% Remove paragraph indentation
+\setlength{\parindent}{0pt}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+\usepackage{listings}
+
+% Define color for inline code
+\definecolor{codebg}{rgb}{0.95, 0.95, 0.95}
+\definecolor{codetext}{rgb}{1, 0.4, 0.2}
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{\colorbox{codebg}{\textcolor{codetext}{\oldtexttt{#1}}}}
+
+% Configure listings for C code blocks
+\lstset{
+  language=C,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{red},
+  breaklines=true,
+  showstringspaces=false,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framesep=5pt,
+  xleftmargin=0.5cm,
+  xrightmargin=0.5cm,
+  columns=fullflexible
+}
+
+\title{
+    \huge Báo cáo đồ án môn An toàn và an ninh mạng\\
+    \large Lớp học phần: INT3307E 1\\
+    \large Giảng viên: TS. Nguyễn Đại Thọ
+}
+
+\author{Nguyễn Tường Hùng – 23020078}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Your abstract.
+\end{abstract}
+
+\section{Introduction}
+
+\section{Background}
+
+\section{Initial Reconnaissance}
+
+\subsection{Glibc Version}
+
+\subsection{Binary Mitigations}
+
+\section{Pseudocode Review}
+
+\subsection{\texttt{rune} Struct}
+
+\subsection{\texttt{main()} Function}
+
+\begin{lstlisting}
+int __fastcall __noreturn main(int argc, const char **argv, const char **envp)
+{
+  int action; // [rsp+Ch] [rbp-4h]
+
+  setup(argc, argv, envp);
+  puts(
+    "This is the ultimate test!\n"
+    "Do you have what it takes to master the runes?\n"
+    "Are you worthy of laying your eyes on the Pharaoh's tomb?\n"
+    "Only your actions will tell...");
+  while ( 1 )
+  {
+    while ( 1 )
+    {
+      puts("1. Create rune\n2. Delete rune\n3. Edit rune\n4. Show rune\nAction: ");
+      action = read_int();
+      if ( action != 4 )
+        break;
+      show();
+    }
+    if ( action > 4 )
+    {
+invalid_action:
+      puts("Invalid action!");
+    }
+    else if ( action == 3 )
+    {
+      edit();
+    }
+    else
+    {
+      if ( action > 3 )
+        goto invalid_action;
+      if ( action == 1 )
+      {
+        create();
+      }
+      else
+      {
+        if ( action != 2 )
+          goto invalid_action;
+        delete();
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+Tại hàm \texttt{main()}, chương trình bắt đầu với lời gọi hàm \texttt{setup()}, sau đó đi vào vòng lặp \texttt{while} cho phép người dùng lựa chọn 1 trong 4 hành động:
+
+\begin{enumerate}
+    \item Tạo \texttt{rune}.
+    \item Xóa \texttt{rune}.
+    \item Chỉnh sửa \texttt{rune}.
+    \item Hiển thị \texttt{rune}.
+\end{enumerate}
+
+Tuy nhiên không cung cấp lựa chọn nào để thoát khỏi chương trình.
+
+\subsection{\texttt{setup()} Function}
+
+\begin{lstlisting}
+int setup()
+{
+  rune **v0; // rax
+  int i; // [rsp+Ch] [rbp-4h]
+
+  setvbuf(stdin, 0, 2, 0);
+  setvbuf(stdout, 0, 2, 0);
+  LODWORD(v0) = setvbuf(stderr, 0, 2, 0);
+  for ( i = 0; i <= 63; ++i )
+  {
+    v0 = MainTable;
+    MainTable[i] = &items[i];
+  }
+  return (int)v0;
+}
+\end{lstlisting}
+
+Qua quan sát mã giả của hàm \texttt{setup()}, các cấu trúc dữ liệu chính xin chào tất các nbạ 
+
+\subsection{\texttt{read\_int()} Function}
+
+\begin{lstlisting}
+int read_int()
+{
+  char buf[40]; // [rsp+0h] [rbp-30h] BYREF
+  unsigned __int64 canary; // [rsp+28h] [rbp-8h]
+
+  canary = __readfsqword(0x28u);
+  memset(buf, 0, 32u);
+  readline(buf, 31);
+  return atoi(buf);
+}
+\end{lstlisting}
+
+\subsection{\texttt{create()} Function}
+
+\begin{lstlisting}
+unsigned __int64 create()
+{
+  int index; // [rsp+0h] [rbp-20h]
+  unsigned int length; // [rsp+4h] [rbp-1Ch]
+  char *content; // [rsp+8h] [rbp-18h]
+  char name[8]; // [rsp+10h] [rbp-10h] BYREF
+  unsigned __int64 canary; // [rsp+18h] [rbp-8h]
+
+  canary = __readfsqword(0x28u);
+  *(_QWORD *)name = 0;
+  puts("Rune name: ");
+  read(0, name, 8u);
+  index = hash(name);
+  if ( MainTable[(unsigned int)hash(name)]->content )
+  {
+    puts("That rune name is already in use!");
+  }
+  else
+  {
+    puts("Rune length: ");
+    length = read_int();
+    if ( length <= 0x60 )
+    {
+      content = (char *)malloc(length + 8);
+      strcpy(MainTable[index]->name, name);
+      MainTable[index]->content = content;
+      MainTable[index]->length = length;
+      strcpy(content, name);
+      puts("Rune contents: ");
+      read(0, content + 8, length);
+    }
+    else
+    {
+      puts("Max length is 0x60!");
+    }
+  }
+  return __readfsqword(0x28u) ^ canary;
+}
+\end{lstlisting}
+
+\subsection{\texttt{hash()} Function}
+
+\begin{lstlisting}
+__int64 __fastcall hash(char *name)
+{
+  char ascii_sum; // [rsp+10h] [rbp-8h]
+  int i; // [rsp+14h] [rbp-4h]
+
+  ascii_sum = 0;
+  for ( i = 0; i <= 7; ++i )
+    ascii_sum += name[i];
+  return ascii_sum & 0x3F;                      // sum & 0b111111
+}
+\end{lstlisting}
+
+\subsection{\texttt{delete()} Function}
+
+\begin{lstlisting}
+unsigned __int64 delete()
+{
+  int index; // [rsp+Ch] [rbp-14h]
+  char name[8]; // [rsp+10h] [rbp-10h] BYREF
+  unsigned __int64 canary; // [rsp+18h] [rbp-8h]
+
+  canary = __readfsqword(0x28u);
+  *(_QWORD *)name = 0;
+  puts("Rune name: ");
+  read(0, name, 8u);
+  index = hash(name);
+  if ( MainTable[index]->content )
+  {
+    free(MainTable[index]->content);
+    memset(MainTable[index], 0, 20u);
+    puts("Rune deleted successfully.");
+  }
+  else
+  {
+    puts("There's no rune with that name!");
+  }
+  return __readfsqword(0x28u) ^ canary;
+}
+\end{lstlisting}
+
+\subsection{\texttt{show()} Function}
+
+\begin{lstlisting}
+unsigned __int64 show()
+{
+  int index; // eax
+  char name[8]; // [rsp+0h] [rbp-10h] BYREF
+  unsigned __int64 canary; // [rsp+8h] [rbp-8h]
+
+  canary = __readfsqword(0x28u);
+  *(_QWORD *)name = 0;
+  puts("Rune name: ");
+  read(0, name, 8u);
+  if ( MainTable[(unsigned int)hash(name)]->content )
+  {
+    puts("Rune contents:\n");
+    index = hash(name);
+    puts((const char *)MainTable[index]->content + 8);
+  }
+  else
+  {
+    puts("That rune doesn't exist!");
+  }
+  return __readfsqword(0x28u) ^ canary;
+}
+\end{lstlisting}
+
+\subsection{\texttt{edit()} Function}
+
+\begin{lstlisting}
+unsigned __int64 edit()
+{
+  int new_index; // eax MAPDST
+  char **content_ptr; // rbx
+  int old_index; // eax
+  int current_index; // eax
+  char *content; // [rsp+0h] [rbp-30h]
+  char old_name[8]; // [rsp+8h] [rbp-28h] BYREF
+  char new_name[8]; // [rsp+10h] [rbp-20h] BYREF
+  unsigned __int64 canary; // [rsp+18h] [rbp-18h]
+
+  canary = __readfsqword(0x28u);
+  *(_QWORD *)old_name = 0;
+  *(_QWORD *)new_name = 0;
+  puts("Rune name: ");
+  read(0, old_name, 8u);
+  content = MainTable[(unsigned int)hash(old_name)]->content;
+  if ( content )
+  {
+    puts("New name: ");
+    read(0, new_name, 8u);
+    if ( MainTable[(unsigned int)hash(new_name)]->content )
+    {
+      puts("That rune name is already in use!");
+    }
+    else
+    {
+      new_index = hash(new_name);
+      strcpy(MainTable[new_index]->name, new_name);
+      content_ptr = &MainTable[(unsigned int)hash(old_name)]->content;
+      new_index = hash(new_name);
+      memcpy(&MainTable[new_index]->content, content_ptr, 12u);
+      strcpy(content, new_name);
+      old_index = hash(old_name);
+      memset(MainTable[old_index], 0, 20u);
+      puts("Rune contents: ");
+      current_index = hash(content);
+      read(0, content + 8, MainTable[current_index]->length);
+    }
+  }
+  else
+  {
+    puts("There's no rune with that name!");
+  }
+  return __readfsqword(0x28u) ^ canary;
+}
+\end{lstlisting}
+
+\section{Exploitation}
+
+\subsection{Leaking Heap Address}
+
+\subsection{Leaking Libc Address}
+
+\subsection{Remote Code Execution}
+
+\section{Conclusion}
+
+\section{References}
+
+\end{document}
