@@ -24,6 +24,7 @@
 \usepackage{xcolor}
 \usepackage{fancyvrb}
 \usepackage{listings}
+\usepackage{float}
 
 % Define color for inline code
 \definecolor{codebg}{rgb}{0.95, 0.95, 0.95}
@@ -159,8 +160,18 @@ int setup()
 }
 \end{lstlisting}
 
-Qua quan sát mã giả của hàm \texttt{setup()}, các cấu trúc dữ liệu chính xin chào tất các nbạ 
+Qua quan sát mã giả của hàm \texttt{setup()}, các cấu trúc dữ liệu chính được xác định như sau:
 
+\begin{itemize}
+  \item \texttt{rune items[64]} - Mảng chứa 64 phần tử với kiểu dữ liệu \texttt{rune}, mỗi phần tử có kích thước 24 bytes.
+  \item \texttt{rune *MainTable[64]} - Mảng chứa 64 phần tử với kiểu dữ liệu là con trỏ \texttt{rune *}, ban đầu được khởi tạo trỏ đến các phần tử tương ứng trong mảng \texttt{items} theo thứ tự.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{images/image-0.png}
+\caption{Hình ảnh minh họa}
+\end{figure}
 \subsection{\texttt{read\_int()} Function}
 
 \begin{lstlisting}
