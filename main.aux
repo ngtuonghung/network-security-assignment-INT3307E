@@ -9,25 +9,35 @@
 \HyPL@Entry{1<</S/D>>}
 \HyPL@Entry{2<</S/D>>}
 \@writefile{toc}{\contentsline {section}{\numberline {I.}Introduction}{1}{section.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {II.}Background}{1}{section.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {III.}Initial Reconnaissance}{1}{section.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.}Glibc Version}{1}{subsection.0.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.}Binary Mitigations}{1}{subsection.0.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {IV.}Pseudocode Review}{1}{section.0.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}} Struct}{1}{subsection.0.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {main()}}} Function}{1}{subsection.0.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {setup()}}} Function}{2}{subsection.0.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Hình ảnh minh họa}}{2}{figure.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {read\_int()}}} Function}{3}{subsection.0.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {create()}}} Function}{3}{subsection.0.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {hash()}}} Function}{3}{subsection.0.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {delete()}}} Function}{4}{subsection.0.4.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {show()}}} Function}{4}{subsection.0.4.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {edit()}}} Function}{5}{subsection.0.4.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {V.}Exploitation}{5}{section.0.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.}Leaking Heap Address}{5}{subsection.0.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.}Leaking Libc Address}{5}{subsection.0.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.}Remote Code Execution}{5}{subsection.0.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {VI.}Conclusion}{5}{section.0.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {VII.}References}{5}{section.0.7}\protected@file@percent }
-\gdef \@abspage@last{7}
+\@writefile{toc}{\contentsline {section}{\numberline {II.}Background}{2}{section.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III.}Initial Reconnaissance}{3}{section.0.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Các file được cung cấp}}{3}{figure.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.}Glibc Version}{3}{subsection.0.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Xác định phiên bản GLIBC}}{4}{figure.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.}Binary Mitigations}{4}{subsection.0.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Kết quả checksec}}{4}{figure.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV.}Pseudocode Review}{6}{section.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}} Struct}{6}{subsection.0.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Cấu trúc rune}}{6}{figure.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {main()}}} Function}{6}{subsection.0.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {setup()}}} Function}{7}{subsection.0.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Mối quan hệ giữa mảng con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {MainTable}}} và mảng dữ liệu \colorbox {codebg}{\textcolor {codetext}{\texttt  {items}}}}}{8}{figure.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {create()}}} Function}{8}{subsection.0.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Cái nhìn tổng quát về một rune}}{9}{figure.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {hash()}}} Function}{9}{subsection.0.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {delete()}}} Function}{10}{subsection.0.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {show()}}} Function}{10}{subsection.0.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {edit()}}} Function}{11}{subsection.0.4.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Hình ảnh minh họa 1}}{12}{figure.0.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Hình ảnh minh họa 2}}{12}{figure.0.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Hình ảnh minh họa 3}}{13}{figure.0.9}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Hình ảnh minh họa 4}}{13}{figure.0.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Hình ảnh minh họa 5}}{14}{figure.0.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Hình ảnh minh họa 6}}{14}{figure.0.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V.}Exploitation}{15}{section.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.}Leaking Heap Address}{15}{subsection.0.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.}Leaking Libc Address}{15}{subsection.0.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.}Remote Code Execution}{15}{subsection.0.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI.}Conclusion}{16}{section.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VII.}References}{17}{section.0.7}\protected@file@percent }
+\gdef \@abspage@last{19}

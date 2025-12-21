@@ -14,8 +14,10 @@
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
 \usepackage[a4paper,top=1.5cm,bottom=1.5cm,left=1.5cm,right=1.5cm,marginparwidth=1.5cm]{geometry}
 
-% Remove paragraph indentation
-\setlength{\parindent}{0pt}
+% Paragraph formatting
+\usepackage{indentfirst}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.5em}
 
 % Useful packages
 \usepackage{amsmath}
@@ -66,17 +68,85 @@ Your abstract.
 
 \section{Introduction}
 
+\clearpage
 \section{Background}
 
+\clearpage
 \section{Initial Reconnaissance}
+
+Trong challenge này, ba file được cung cấp bao gồm file thực thi \texttt{runic}, thư viện C chuẩn \texttt{libc.so.6}, và dynamic linker \texttt{ld.so}:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-12.png}
+\caption{Các file được cung cấp}
+\end{figure}
+
+File \texttt{libc.so.6} là thư viện C chuẩn (GNU C Library) chứa các hàm cơ bản của ngôn ngữ C như \texttt{malloc()}, \texttt{free()}, \texttt{printf()},... và các system call wrappers. Việc cung cấp phiên bản cụ thể của libc giúp đảm bảo tính nhất quán trong quá trình khai thác, vì các cơ chế bảo vệ, cấu trúc dữ liệu heap, và địa chỉ các hàm có thể khác nhau giữa các phiên bản.
+
+File \texttt{ld.so} là dynamic linker/loader, chương trình chịu trách nhiệm load các shared libraries vào memory và resolve địa chỉ các symbol trong libc khi chương trình được thực thi. Dynamic linker đảm bảo rằng các hàm từ libc và các thư viện khác được liên kết đúng cách với địa chỉ trong không gian bộ nhớ của process.
 
 \subsection{Glibc Version}
 
+Kết quả từ lệnh \texttt{strings libc.so.6 | grep "GLIBC\_2."} trong Figure 2 cho thấy thư viện được cung cấp là GLIBC phiên bản \texttt{2.34}, được xác định thông qua symbol version cao nhất là \texttt{GLIBC\_2\_34}. Việc xác định chính xác phiên bản GLIBC là bước quan trọng trong quá trình phân tích và khai thác các lỗ hổng liên quan đến heap.
+
+Phiên bản GLIBC có ảnh hưởng trực tiếp đến cơ chế quản lý heap và các biện pháp bảo vệ được triển khai. Cụ thể, GLIBC \texttt{2.34} là phiên bản quan trọng vì đã loại bỏ hoàn toàn các hook functions như \texttt{\_\_malloc\_hook}, \texttt{\_\_free\_hook}, và \texttt{\_\_realloc\_hook} - những target phổ biến trong các kỹ thuật khai thác heap truyền thống. Ngoài ra, mỗi phiên bản GLIBC có các cấu trúc dữ liệu heap khác nhau về offset, size, và cách tổ chức tcache bins, fastbins, unsorted bins. Các kiểm tra an ninh (security checks) như tcache key, safe-linking trong fastbins, và các validation khác cũng được bổ sung hoặc thay đổi qua các phiên bản.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{images/image-11.png}
+\caption{Xác định phiên bản GLIBC}
+\end{figure}
+
 \subsection{Binary Mitigations}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-10.png}
+\caption{Kết quả checksec}
+\end{figure}
+
+Kết quả từ công cụ \texttt{checksec} trong Figure 3 cho thấy file thực thi \texttt{runic} được biên dịch cho kiến trúc \texttt{amd64-64-little} với các cơ chế bảo vệ sau:
+
+\begin{itemize}
+    \item \texttt{Full RELRO} đảm bảo toàn bộ Global Offset Table được đánh dấu read-only sau khi dynamic linker hoàn tất, ngăn chặn khả năng ghi đè các địa chỉ hàm trong GOT.
+    \item \texttt{Canary found} cho biết chương trình sử dụng stack canaries - một giá trị ngẫu nhiên được đặt trên stack để phát hiện stack buffer overflow trước khi hàm return.
+    \item \texttt{NX enabled} đánh dấu các vùng nhớ dữ liệu như stack và heap là non-executable, ngăn việc thực thi shellcode trực tiếp tại các vùng này.
+    \item \texttt{PIE enabled} cho phép binary được load vào địa chỉ ngẫu nhiên trong memory mỗi lần thực thi, khiến các địa chỉ code và data không thể dự đoán trước.
+    \item \texttt{RUNPATH} được đặt là \texttt{b'.'} có nghĩa là dynamic linker sẽ tìm shared libraries trong thư mục hiện tại, đảm bảo chương trình load đúng phiên bản libc được cung cấp.
+    \item \texttt{Stripped: No} cho biết binary vẫn chứa debug symbols và tên hàm gốc, giúp quá trình phân tích dễ dàng hơn.
+\end{itemize}
+
+\clearpage
 \section{Pseudocode Review}
 
 \subsection{\texttt{rune} Struct}
+
+Với sự trợ giúp của công cụ Claude trong việc phân tích mã giả, cấu trúc \texttt{rune} được xác định với kích thước \texttt{24} bytes (\texttt{0x18}). Cấu trúc này bao gồm các trường sau:
+\begin{itemize}
+    \item \texttt{name[8]}: mảng 8 bytes chứa tên của rune.
+    \item \texttt{*content}: con trỏ 8 bytes trỏ đến nội dung của rune.
+    \item \texttt{length}: số nguyên không dấu 4 bytes lưu độ dài nội dung.
+    \item \texttt{padding}: 4 bytes padding để căn chỉnh cấu trúc.
+\end{itemize}
+
+\begin{lstlisting}
+00000000 struct rune // sizeof=0x18
+00000000 {
+00000000     char name[8];
+00000008     char *content;
+00000010     unsigned int length;
+00000014     unsigned int padding;
+00000018 };
+\end{lstlisting}
+
+Cấu trúc \texttt{rune} có thể minh hoạ như sau:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\linewidth]{images/image-9.png}
+\caption{Cấu trúc rune}
+\end{figure}
 
 \subsection{\texttt{main()} Function}
 
@@ -160,32 +230,20 @@ int setup()
 }
 \end{lstlisting}
 
-Qua quan sát mã giả của hàm \texttt{setup()}, các cấu trúc dữ liệu chính được xác định như sau:
+Qua quan sát mã giả của hàm \texttt{setup()}, các biến toàn cục chính được xác định như sau:
 
 \begin{itemize}
   \item \texttt{rune items[64]} - Mảng chứa 64 phần tử với kiểu dữ liệu \texttt{rune}, mỗi phần tử có kích thước 24 bytes.
-  \item \texttt{rune *MainTable[64]} - Mảng chứa 64 phần tử với kiểu dữ liệu là con trỏ \texttt{rune *}, ban đầu được khởi tạo trỏ đến các phần tử tương ứng trong mảng \texttt{items} theo thứ tự.
+  \item \texttt{rune *MainTable[64]} - Mảng chứa 64 phần tử với kiểu dữ liệu là con trỏ \texttt{rune *}.
 \end{itemize}
+
+Mối quan hệ giữa \texttt{MainTable} và \texttt{items} được minh họa trong hình dưới đây. Ban đầu, mỗi phần tử \texttt{MainTable[i]} trỏ đến phần tử tương ứng \texttt{items[i]}, tạo thành một ánh xạ một-một giữa hai mảng.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.75\linewidth]{images/image-0.png}
-\caption{Hình ảnh minh họa}
+\caption{Mối quan hệ giữa mảng con trỏ \texttt{MainTable} và mảng dữ liệu \texttt{items}}
 \end{figure}
-\subsection{\texttt{read\_int()} Function}
-
-\begin{lstlisting}
-int read_int()
-{
-  char buf[40]; // [rsp+0h] [rbp-30h] BYREF
-  unsigned __int64 canary; // [rsp+28h] [rbp-8h]
-
-  canary = __readfsqword(0x28u);
-  memset(buf, 0, 32u);
-  readline(buf, 31);
-  return atoi(buf);
-}
-\end{lstlisting}
 
 \subsection{\texttt{create()} Function}
 
@@ -230,20 +288,36 @@ unsigned __int64 create()
 }
 \end{lstlisting}
 
+Hàm \texttt{create()} cung cấp chức năng tạo một rune mới. Người dùng nhập \texttt{name} dài tối đa \texttt{8} bytes. Giá trị index được tính thông qua hàm băm \texttt{hash(name)}, cho thấy chương trình đang triển khai một cấu trúc Hash Table.
+
+Sau khi tính toán index, chương trình kiểm tra con trỏ \texttt{content} của rune tương ứng để nhằm xác định tên đã được sử dụng hay chưa. Nếu con trỏ \texttt{content} khác Null (đã được sử dụng), thông báo "That rune name is already in use!" được in ra và hàm kết thúc. Ngược lại, người dùng tiếp tục nhập vào độ dài nội dung, tối đa \texttt{0x60} bytes.
+
+Một chunk (vùng nhớ) sẽ được cấp phát trên heap với kích thước bằng độ dài của nội dung được nhập cộng thêm \texttt{8} bytes, được trỏ đến bởi con trỏ \texttt{content}. Các giá trị được sao chép vào các trường tương ứng trong cấu trúc rune. Đặc biệt, trường \texttt{name} được sao chép thêm một lần nữa vào vị trí bắt đầu của chunk, còn nội dung sẽ được ghi vào tại vị trí offset là \texttt{8}. 
+
+Dưới đây là hình ảnh minh hoạ tổng quát về một rune được tạo (khối bên phải cùng là cấu trúc của một heap chunk được triển khai trong glibc với ptmalloc):
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-8.png}
+\caption{Cái nhìn tổng quát về một rune}
+\end{figure}
+
 \subsection{\texttt{hash()} Function}
 
 \begin{lstlisting}
-__int64 __fastcall hash(char *name)
-{
-  char ascii_sum; // [rsp+10h] [rbp-8h]
-  int i; // [rsp+14h] [rbp-4h]
-
-  ascii_sum = 0;
-  for ( i = 0; i <= 7; ++i )
+  __int64 __fastcall hash(char *name)
+  {
+    char ascii_sum; // [rsp+10h] [rbp-8h]
+    int i; // [rsp+14h] [rbp-4h]
+    
+    ascii_sum = 0;
+    for ( i = 0; i <= 7; ++i )
     ascii_sum += name[i];
-  return ascii_sum & 0x3F;                      // sum & 0b111111
-}
+    return ascii_sum & 0x3F;                      // sum & 0b111111
+    }
 \end{lstlisting}
+  
+Hàm \texttt{hash()} thực hiện tính toán tổng các giá trị ASCII của từng ký tự trong tên, sau đó thực hiện phép toán bitwise AND với \texttt{0x3F}, tương đương với phép modulo \texttt{64}. Giá trị trả về nằm trong khoảng $\texttt{0} \rightarrow \texttt{63}$.
 
 \subsection{\texttt{delete()} Function}
 
@@ -273,6 +347,10 @@ unsigned __int64 delete()
 }
 \end{lstlisting}
 
+Hàm \texttt{delete()} cho phép người dùng xoá một rune. Hàm yêu cầu nhập \texttt{name} để tính toán index trong mảng \texttt{MainTable[]} thông qua hàm \texttt{hash()}.
+
+Hàm được triển khai một cách an toàn. Trước khi thực hiện \texttt{free()}, con trỏ \texttt{content} được kiểm tra được so sánh với Null nhằm tránh lỗ hổng Double Free. Nếu con trỏ \texttt{content} là Null, thông báo "There's no rune with that name!" được in ra và hàm kết thúc. Ngược lại, chương trình thực hiện giải phóng \texttt{free(content)}, và đặt toàn bộ dữ liệu của phần tử rune tương ứng về Null thông qua \texttt{memset()}, tránh được lỗ hổng User After Free.
+
 \subsection{\texttt{show()} Function}
 
 \begin{lstlisting}
@@ -299,6 +377,8 @@ unsigned __int64 show()
   return __readfsqword(0x28u) ^ canary;
 }
 \end{lstlisting}
+
+Hàm \texttt{show()} cho phép người dùng in ra rune \texttt{content} tại vị trí có offset là \texttt{8}.
 
 \subsection{\texttt{edit()} Function}
 
@@ -351,6 +431,93 @@ unsigned __int64 edit()
 }
 \end{lstlisting}
 
+Hàm \texttt{edit()} cho phép người dùng thay đổi tên và nội dung của rune đã tồn tại. Hàm yêu cầu nhập vào tên cũ \texttt{old\_name} và tên mới \texttt{new\_name} của rune. Chỉ trong trường hợp \texttt{content} tại index được tính bởi hash của \texttt{old\_name} tồn tại và \texttt{content} tại index được tính bởi hash của \texttt{new\_name} chưa tồn tại, người dùng mới được phép tiếp tục thực thi. Ngược lại, hàm sẽ kết thúc.
+
+Chuỗi hình minh hoạ dưới đây mô tả hoạt động của hàm \texttt{edit()}:
+
+\begin{lstlisting}
+new_index = hash(new_name);
+strcpy(MainTable[new_index]->name, new_name);
+content_ptr = &MainTable[(unsigned int)hash(old_name)]->content;
+\end{lstlisting}
+
+Ban đầu, con trỏ tại \texttt{old\_index} trong \texttt{MainTable} đang trỏ đến rune có tên là \texttt{old\_name} (gọi là rune A), có con trỏ \texttt{content} trỏ đến chunk trên heap (gọi là chunk C). Con trỏ tại \texttt{new\_index} trỏ đến rune có tên là \texttt{new\_name} (gọi là rune B).
+
+Sau 3 thao tác trên, sơ đồ trông như sau:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-1.png}
+\caption{Hình ảnh minh họa 1}
+\end{figure}
+
+\begin{lstlisting}
+new_index = hash(new_name);
+memcpy(&MainTable[new_index]->content, content_ptr, 12u);
+strcpy(content, new_name);
+\end{lstlisting}
+
+Tiếp theo, chương trình sao chép trường \texttt{*content} và \texttt{length} của rune A sang rune B:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-2.png}
+\caption{Hình ảnh minh họa 2}
+\end{figure}
+
+\begin{lstlisting}
+old_index = hash(old_name);
+memset(MainTable[old_index], 0, 20u);
+\end{lstlisting}
+
+Tiếp theo, chương trình xóa bỏ nội dung ở rune A (đặt về Null):
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-3.png}
+\caption{Hình ảnh minh họa 3}
+\end{figure}
+
+\begin{lstlisting}
+current_index = hash(content);
+read(0, content + 8, MainTable[current_index]->length);
+\end{lstlisting}
+
+Tiếp theo, chương trình tính \texttt{current\_index} dựa vào nội dung đã được ghi vào chunk C (\texttt{new\_name}) và gọi hàm \texttt{read()} cho phép người dùng ghi nội dung vào vị trí \texttt{content + 8}:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-4.png}
+\caption{Hình ảnh minh họa 4}
+\end{figure}
+
+Tại đây, thay vì sử dụng \texttt{new\_index} để lấy trường \texttt{length}, chương trình lại tính \texttt{current\_index} dựa trên \texttt{hash(content)} - tên đã được sao chép vào chunk C thông qua \texttt{strcpy(content, new\_name)}.
+
+Cần lưu ý rằng \texttt{new\_name} ban đầu được nhập vào thông qua \texttt{read(0, new\_name, 8u)}. Hàm \texttt{read()} thông thường ngừng đọc khi đã đọc đủ số lượng bytes được chỉ định trong tham số hoặc gặp EOF, không quan tâm đến ký tự null hay ký tự xuống dòng. Trong khi đó, \texttt{strcpy()} ngừng sao chép khi đã đủ ký tự hoặc gặp ký tự null trong chuỗi nguồn.
+
+Do đó, việc sử dụng \texttt{strcpy()} không đảm bảo sao chép toàn bộ tên, vì tên được nhập có thể chứa ký tự null ở giữa. Điều này dẫn đến việc tính toán hash có thể bị sai lệch, khiến \texttt{current\_index} không phải là \texttt{new\_index}. Kết quả là việc lấy trường \texttt{length} tại \texttt{MainTable[current\_index]->length} cũng có thể cho ra giá trị nhỏ hơn hoặc lớn hơn độ dài thực tế.
+
+Cùng xem xét một ví dụ sau, giả sử hiện đang có rune thứ nhất với tên \texttt{\textbackslash x01}, được ánh xạ đến index 1, và rune thứ hai với tên \texttt{\textbackslash x02}, được ánh xạ đến index 2.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-5.png}
+\caption{Hình ảnh minh họa 5}
+\end{figure}
+
+Tiếp theo, chúng ta thực hiện edit rune thứ nhất với tên mới là \texttt{new\_name = \textbackslash x02\textbackslash x00\textbackslash x01}. Tên mới này sẽ được ánh xạ tới \texttt{new\_index} là 3. Tuy nhiên, do tên mới chứa null byte ở giữa, khi tên mới được sao chép vào chunk, \texttt{strcpy()} chỉ lấy đến \texttt{\textbackslash x02} và kết thúc tại null terminator.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-6.png}
+\caption{Hình ảnh minh họa 6}
+\end{figure}
+
+Vậy \texttt{current\_index} không phải là 3 mà là 2, dẫn đến việc lấy ra \texttt{length2} thay vì \texttt{length}. Trong trường hợp \texttt{length2} lớn hơn \texttt{length}, lệnh \texttt{read(0, content + 8, MainTable[current\_index]->length)} có thể gây ra heap buffer overflow. Lỗ hổng này cho phép kẻ tấn công ghi đè để giả mạo kích thước, con trỏ \texttt{fd}, con trỏ \texttt{bk} của chunk liền sau, hoặc có thể làm rò rỉ địa chỉ trên heap và địa chỉ trong thư viện libc.
+
+ASLR (Address Space Layout Randomization) là cơ chế bảo vệ ngẫu nhiên hóa vị trí các vùng nhớ quan trọng (stack, heap, thư viện, binary) mỗi lần chương trình khởi động, khiến kẻ tấn công không thể dự đoán trước địa chỉ cụ thể. Việc leak được địa chỉ heap và libc cho phép tính toán các địa chỉ thực tế của các hàm và cấu trúc dữ liệu quan trọng, từ đó bypass được ASLR và tiến hành các bước khai thác tiếp theo.
+
+\clearpage
 \section{Exploitation}
 
 \subsection{Leaking Heap Address}
@@ -359,8 +526,10 @@ unsigned __int64 edit()
 
 \subsection{Remote Code Execution}
 
+\clearpage
 \section{Conclusion}
 
+\clearpage
 \section{References}
 
 \end{document}

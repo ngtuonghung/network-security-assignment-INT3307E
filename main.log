@@ -1,10 +1,10 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.12.1)  1 DEC 2025 22:03
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.12.15)  21 DEC 2025 17:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/ngtuonghung/Desktop/network-security-assignment-INT3307E/main
-(/home/ngtuonghung/Desktop/network-security-assignment-INT3307E/main.tex
+**/home/ngtuonghung/network-security-assignment-INT3307E/main
+(/home/ngtuonghung/network-security-assignment-INT3307E/main.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-14>
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/report.cls
@@ -25,17 +25,17 @@ File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrextend.sty
-Package: scrextend 2025/09/09 v3.48 KOMA-Script package (extend other classes with features of KOMA-Script classes)
+Package: scrextend 2025/12/01 v3.49 KOMA-Script package (extend other classes with features of KOMA-Script classes)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrkbase.sty
-Package: scrkbase 2025/09/09 v3.48 KOMA-Script package (KOMA-Script-dependent basics and keyval usage)
+Package: scrkbase 2025/12/01 v3.49 KOMA-Script package (KOMA-Script-dependent basics and keyval usage)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrbase.sty
-Package: scrbase 2025/09/09 v3.48 KOMA-Script package (KOMA-Script-independent basics and keyval usage)
+Package: scrbase 2025/12/01 v3.49 KOMA-Script package (KOMA-Script-independent basics and keyval usage)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrlfile.sty
-Package: scrlfile 2025/09/09 v3.48 KOMA-Script package (file load hooks)
+Package: scrlfile 2025/12/01 v3.49 KOMA-Script package (file load hooks)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrlfile-hook.sty
-Package: scrlfile-hook 2025/09/09 v3.48 KOMA-Script package (using LaTeX hooks)
+Package: scrlfile-hook 2025/12/01 v3.49 KOMA-Script package (using LaTeX hooks)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrlogo.sty
-Package: scrlogo 2025/09/09 v3.48 KOMA-Script package (logo)
+Package: scrlogo 2025/12/01 v3.49 KOMA-Script package (logo)
 ))) (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks17
@@ -45,7 +45,7 @@ Already applied: [0000/00/00] Usage of raw or classic option list on input line 
 )))
 Package scrextend Info: File `scrsize11pt.clo' used to setup font sizes on input line 4.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrsize11pt.clo
-File: scrsize11pt.clo 2025/09/09 v3.48 KOMA-Script font size class option (11pt)
+File: scrsize11pt.clo 2025/12/01 v3.49 KOMA-Script font size class option (11pt)
 ) (/usr/local/texlive/2025/texmf-dist/tex/generic/babel/babel.sty
 Package: babel 2025/11/23 v25.16 The multilingual framework for LuaLaTeX, pdfLaTeX and XeLaTeX
 \babel@savecnt=\count280
@@ -57,7 +57,7 @@ LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) o
 LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) on input line 2058.
 LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) on input line 2083.
 \U@D=\dimen149
-\l@unhyphenated=\language23
+\l@unhyphenated=\language5
  (/usr/local/texlive/2025/texmf-dist/tex/generic/babel/xebabel.def)
 \bbl@readstream=\read2
 \bbl@dirlevel=\count281
@@ -69,9 +69,9 @@ Language: english 2017/06/06 v3.3r English support from the babel system
 Package babel Info: Hyphen rules for 'canadian' set to \l@english
 (babel)             (\language0). Reported on input line 102.
 Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
-(babel)             (\language7). Reported on input line 105.
+(babel)             (\language3). Reported on input line 105.
 Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
-(babel)             (\language7). Reported on input line 108.
+(babel)             (\language3). Reported on input line 108.
 )) (/usr/local/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
  (/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
@@ -91,6 +91,8 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \Gm@layouthoffset=\dimen156
 \Gm@layoutvoffset=\dimen157
 \Gm@dimlist=\toks18
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/indentfirst.sty
+Package: indentfirst 2023/07/02 v1.03 Indent first paragraph (DPC)
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
 \@mathmargin=\skip51
@@ -341,26 +343,26 @@ File: l3backend-xetex.def 2025-10-09 L3 backend support: XeTeX
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -396,7 +398,7 @@ LaTeX Font Info:    ... okay on input line 60.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 60.
+Package hyperref Info: Link coloring ON on input line 62.
 (./main.out) (./main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
@@ -404,29 +406,74 @@ Package hyperref Info: Link coloring ON on input line 60.
 \c@lstlisting=\count326
  [1
 
-] [1]
+] [1] [1] [2
+
+]
+File: images/image-12.png Graphic file (type bmp)
+<images/image-12.png>
+File: images/image-11.png Graphic file (type bmp)
+<images/image-11.png>
+ [3
+
+]
+File: images/image-10.png Graphic file (type bmp)
+<images/image-10.png>
+ [4] [5]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 79.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 123.
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 84.
- [1]
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 134.
+File: images/image-9.png Graphic file (type bmp)
+<images/image-9.png>
+ [6
+
+] [7]
 File: images/image-0.png Graphic file (type bmp)
 <images/image-0.png>
- [2] [3] [4] [5] (./main.aux)
+ [8]
+File: images/image-8.png Graphic file (type bmp)
+<images/image-8.png>
+ [9] [10] [11]
+File: images/image-1.png Graphic file (type bmp)
+<images/image-1.png>
+File: images/image-2.png Graphic file (type bmp)
+<images/image-2.png>
+File: images/image-3.png Graphic file (type bmp)
+<images/image-3.png>
+ [12]
+File: images/image-4.png Graphic file (type bmp)
+<images/image-4.png>
+File: images/image-5.png Graphic file (type bmp)
+<images/image-5.png>
+ [13]
+File: images/image-6.png Graphic file (type bmp)
+<images/image-6.png>
+
+Overfull \hbox (12.99081pt too wide) in paragraph at lines 516--517
+\TU/lmr/m/n/10.95 trường hợp [][][][][][] lớn hơn [][][][][][], lệnh [][][][][][]
+ []
+
+[14] [15
+
+] [16
+
+] [17
+
+] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-14>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 4EA74C158AB3022870E48048F9CC5ED8;2914.
+(rerunfilecheck)             Checksum: E2E8B68EE7FC137B990DEC4B52B56F24;2745.
  ) 
 Here is how much of TeX's memory you used:
- 13528 strings out of 469713
- 214027 string characters out of 5466975
- 1120257 words of memory out of 5000000
- 41989 multiletter control sequences out of 15000+600000
- 631595 words of font info for 66 fonts, out of 8000000 for 9000
- 319 hyphenation exceptions out of 8191
- 108i,6n,107p,324b,1779s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 13647 strings out of 470152
+ 216938 string characters out of 5477354
+ 1123258 words of memory out of 5000000
+ 42057 multiletter control sequences out of 15000+600000
+ 632735 words of font info for 70 fonts, out of 8000000 for 9000
+ 36 hyphenation exceptions out of 8191
+ 108i,6n,107p,744b,1781s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (7 pages).
+Output written on main.pdf (19 pages).
