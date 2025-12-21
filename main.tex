@@ -72,8 +72,77 @@ Your abstract.
 \clearpage
 \section{Introduction}
 
+HTB Cyber Apocalypse CTF 2023: The Cursed Mission là sự kiện Capture The Flag (CTF) quy mô quốc tế do Hack The Box tổ chức từ ngày 18-23 tháng 3 năm 2023, thu hút sự tham gia của hơn 12,000 hackers từ khắp nơi trên thế giới. Cuộc thi cung cấp hơn 40 thử thách trải dài trên nhiều lĩnh vực bảo mật khác nhau bao gồm Web Exploitation, Binary Exploitation (Pwn), Forensics, Cryptography, Hardware, Machine Learning và Blockchain, với độ khó từ Very Easy đến Insane, mang đến cơ hội cho người tham gia thử thách kỹ năng tấn công và phòng thủ trong các kịch bản mô phỏng thực tế.
+
+\subsection{Pwn Challenge: Runic}
+
+Đồ án này tập trung vào việc phân tích toàn diện challenge Runic, một trong những thử thách thuộc mảng Binary Exploitation của cuộc thi. Runic là một chương trình C 64-bit sử dụng ptmalloc (GLIBC malloc implementation) để quản lý dynamic memory, được bảo vệ bởi các cơ chế bảo mật hiện đại như ASLR, NX, Full RELRO, và PIE. Thử thách yêu cầu người chơi phát hiện và khai thác các lỗ hổng trong chương trình và bypass các cơ chế bảo vệ này, cuối cùng đạt được Remote Code Execution và thu thập flag. Đồ án trình bày chi tiết quá trình phân tích từ giai đoạn reconnaissance, phát hiện lỗ hổng, xây dựng exploit primitives, cho đến việc thực thi chuỗi tấn công hoàn chỉnh, kèm theo giải thích sâu về các kỹ thuật heap exploitation được áp dụng và cách thức bypass từng lớp bảo vệ.
+
+\subsection{Lỗ hổng chính}
+
+Lỗ hổng cốt lõi trong Runic nằm ở việc xử lý chuỗi ký tự không đúng cách (improper string handling), cụ thể là trong quá trình tính toán độ dài chuỗi. Khi chương trình sử dụng hàm \texttt{strlen()} để xác định kích thước dữ liệu cần xử lý, nếu dữ liệu đầu vào không được null-terminated hoặc chứa null bytes ở vị trí không mong đợi, \texttt{strlen()} sẽ trả về độ dài sai lệch so với kích thước thực tế của buffer. Điều này dẫn đến tình huống chương trình cấp phát chunk với kích thước nhỏ hơn dữ liệu thực tế sẽ được ghi vào, gây ra heap buffer overflow - một lỗ hổng cho phép ghi dữ liệu vượt quá ranh giới chunk và ghi đè metadata của các chunks liền kề.
+
+Thông qua heap buffer overflow, kẻ tấn công có thể thao túng các metadata quan trọng của ptmalloc như trường \texttt{size} và con trỏ \texttt{fd} trong free chunks, cho phép thực hiện các kỹ thuật khai thác tinh vi như tcache poisoning và unsorted bin exploitation. Việc kiểm soát metadata này, kết hợp với khả năng bypass các cơ chế bảo vệ hiện đại của GLIBC (Safe-Linking, alignment checks, double-free detection), cuối cùng giúp kẻ tấn công đạt được hai primitives mạnh mẽ: Arbitrary Address Write (AAW - khả năng ghi dữ liệu vào địa chỉ bất kỳ) và Arbitrary Address Read (AAR - khả năng đọc dữ liệu từ địa chỉ bất kỳ). Với AAR, kẻ tấn công leak được các địa chỉ quan trọng như libc base và heap base để vượt qua ASLR. Với AAW, kẻ tấn công ghi đè các cấu trúc dữ liệu quan trọng như GOT entries hoặc function pointers, cuối cùng chuyển hướng luồng thực thi của chương trình để đạt được Remote Code Execution (RCE) và thu thập flag.
+
+\subsection{Phương pháp và công cụ}
+
+Phương pháp phân tích chính được sử dụng trong tài liệu này là \textbf{code review} - đọc và phân tích source code để hiểu logic chương trình và xác định các điểm yếu có thể khai thác. Quá trình này được hỗ trợ bởi ba công cụ chính: \textbf{IDA Pro} để thực hiện reverse engineering và phân tích static binary, giúp hiểu rõ cấu trúc chương trình, luồng thực thi và các hàm quan trọng; \textbf{pwndbg} - một plugin mạnh mẽ cho GDB - để debug chương trình trong runtime, quan sát trạng thái heap, kiểm tra giá trị các con trỏ và metadata của chunks, cũng như xác minh các giả thuyết về cách thức hoạt động của exploit; và \textbf{pwntools} - một framework Python được thiết kế đặc biệt cho CTF - để viết exploit script tự động hóa quá trình tấn công, giao tiếp với chương trình target thông qua stdin/stdout, và xử lý các encoding/packing dữ liệu cần thiết.
+
+\subsection{Sử dụng AI trong tài liệu}
+
+\textbf{Claude Code}, một công cụ AI được phát triển bởi Anthropic, được sử dụng để hỗ trợ viết báo cáo này và review pseudocode từ quá trình reverse engineering. Toàn bộ công việc kỹ thuật bao gồm phân tích lỗ hổng, thiết kế và xây dựng exploit, debug, cũng như kiểm thử đều do tác giả tự thực hiện. Việc sử dụng AI được công khai rõ ràng nhằm đảm bảo tính minh bạch và tuân thủ các chuẩn mực học thuật.
+
 \clearpage
 \section{Background}
+
+\subsection{Ptmalloc và Heap Chunk Structure}
+
+Ptmalloc là memory allocator mặc định trong GNU C Library, chịu trách nhiệm quản lý cấp phát động thông qua các hàm \texttt{malloc()}, \texttt{free()}, và các hàm liên quan. Đơn vị quản lý cơ bản của ptmalloc là chunk - một khối bộ nhớ liên tục bao gồm metadata (thông tin quản lý) và user data:
+
+\begin{lstlisting}
+struct malloc_chunk {
+    size_t      prev_size;  // Size of previous chunk (if free)
+    size_t      size;       // Size of current chunk + flags
+    malloc_chunk* fd;       // Forward pointer (free chunks only)
+    malloc_chunk* bk;       // Backward pointer (free chunks only)
+};
+\end{lstlisting}
+
+Khi chunk được cấp phát, chương trình chỉ nhìn thấy phần user data. Tuy nhiên khi chunk được giải phóng, ptmalloc tái sử dụng chính vùng user data này để lưu trữ các con trỏ \texttt{fd} (forward) và \texttt{bk} (backward), liên kết chunk vào các danh sách bins để tái sử dụng sau này. Trường \texttt{size} không chỉ lưu kích thước chunk mà còn sử dụng 3 bit thấp nhất làm flags, trong đó quan trọng nhất là \textbf{PREV\_INUSE bit} (bit 0): nếu bit này được set (= 1), chunk trước đó đang được sử dụng; nếu bằng 0, chunk trước đó đã được giải phóng. Bit này được ptmalloc sử dụng để thực hiện consolidation (gộp các free chunks liền kề nhằm tránh phân mảnh bộ nhớ) và phát hiện các lỗi double-free.
+
+\subsection{Heap Allocation và Deallocation}
+
+Khi \texttt{malloc()} được gọi, ptmalloc không đơn giản yêu cầu kernel cấp phát memory mới mà tìm kiếm các chunks đã được giải phóng trước đó để tái sử dụng. Quá trình tìm kiếm diễn ra theo thứ tự ưu tiên: tcache bins (nhanh nhất, không cần lock) được kiểm tra đầu tiên, tiếp theo là fastbins và smallbins cho các chunks nhỏ, sau đó là unsorted bin, largebins cho chunks lớn, và cuối cùng là top chunk. Chỉ khi không tìm thấy chunk phù hợp, ptmalloc mới yêu cầu kernel mở rộng heap.
+
+Khi \texttt{free()} được gọi, chunk không thực sự được trả về cho kernel mà được đưa vào các bins để \texttt{malloc()} có thể tái sử dụng. Chunk sẽ được đưa vào tcache trước tiên nếu tcache chưa đầy. Nếu chunk không thuộc tcache size hoặc tcache đã đầy, ptmalloc sẽ thực hiện consolidation - gộp chunk với các free chunks liền kề để tạo thành một chunk lớn hơn, sau đó đưa vào unsorted bin hoặc fastbins tùy thuộc vào kích thước.
+
+\subsection{Tcache Bins}
+
+Thread-local cache (tcache) là cơ chế cache quan trọng được giới thiệu từ GLIBC 2.26 nhằm tối ưu hiệu suất allocation trong môi trường đa luồng. Mỗi thread duy trì 64 tcache bins riêng biệt, mỗi bin chứa tối đa 7 chunks có cùng kích thước (từ 0x20 đến 0x410 bytes, cách nhau 0x10 bytes). Điểm đặc biệt của tcache là tính đơn giản và tốc độ: tcache sử dụng singly-linked list (chỉ có con trỏ \texttt{fd} trỏ đến chunk tiếp theo), hoạt động theo cơ chế LIFO, và quan trọng nhất là \textbf{không cần lock} vì mỗi thread có tcache riêng. Điều này giúp tcache cực kỳ nhanh nhưng cũng khiến nó dễ bị khai thác do thiếu các security checks, đặc biệt trước GLIBC 2.32.
+
+Từ GLIBC 2.32, tcache áp dụng cơ chế \textbf{Safe-Linking} để bảo vệ con trỏ \texttt{fd}. Thay vì lưu trực tiếp địa chỉ chunk tiếp theo, con trỏ được mã hóa theo công thức $\text{PROTECT}(P) = (L \gg 12) \oplus P$, trong đó $L$ là địa chỉ heap nơi con trỏ \texttt{fd} được lưu trữ và $P$ là địa chỉ thực của chunk tiếp theo. Cơ chế này vừa ngăn chặn việc ghi đè \texttt{fd} tùy ý, vừa tạo ra cơ hội để leak heap address khi kẻ tấn công có thể đọc giá trị \texttt{fd} đã mã hóa. Ngoài ra, ptmalloc yêu cầu tất cả chunks hợp lệ phải được cấp phát tại địa chỉ được căn chỉnh 16 bytes (\textbf{alignment check}), tức địa chỉ phải chia hết cho 16.
+
+\subsection{Unsorted Bin}
+
+Unsorted bin là một bin đặc biệt trong ptmalloc, hoạt động như "trạm trung chuyển" cho các chunks lớn vừa được giải phóng. Đây là doubly-linked circular list chứa các chunks có kích thước bất kỳ (không thuộc fastbin/tcache size) chưa được sắp xếp. Khi một chunk lớn được \texttt{free()}, nếu không được đưa vào tcache, chunk sẽ được consolidate với các free chunks liền kề rồi đưa vào unsorted bin. Trong quá trình \texttt{malloc()} tiếp theo, ptmalloc quét unsorted bin để tìm chunk phù hợp hoặc sắp xếp chunks vào smallbins/largebins tương ứng.
+
+Khi chunk được đưa vào unsorted bin, ptmalloc tự động ghi hai con trỏ \texttt{fd} và \texttt{bk} vào vùng user data của chunk, trỏ về main arena structure nằm trong vùng nhớ libc. Bằng cách đọc các con trỏ này (thông qua các lỗ hổng cho phép đọc memory), kẻ tấn công có thể leak địa chỉ trong libc và tính ngược lại libc base address, từ đó tính toán địa chỉ của bất kỳ hàm nào trong libc như \texttt{system()} hay \texttt{execve()}.
+
+\subsection{Other Bins}
+
+Ngoài tcache và unsorted bin, ptmalloc còn sử dụng các loại bins khác. \textbf{Fastbins} bao gồm 10 bins dành cho các chunks nhỏ (0x20-0x80 bytes), sử dụng singly-linked list và hoạt động theo LIFO. Fastbins không thực hiện consolidation để tăng tốc allocation/deallocation, và từ GLIBC 2.32 đã áp dụng Safe-Linking tương tự tcache. \textbf{Smallbins} bao gồm 62 bins cho chunks từ 0x20 đến 0x3f0 bytes, mỗi bin chứa chunks có kích thước cố định. \textbf{Largebins} bao gồm 63 bins cho chunks lớn ($\geq$ 0x400 bytes), mỗi bin chứa một khoảng kích thước.
+
+\subsection{Heap Buffer Overflow}
+
+Heap buffer overflow là lỗ hổng xảy ra khi chương trình ghi dữ liệu vượt quá ranh giới của một chunk đã được cấp phát. Do các chunks được sắp xếp liền kề nhau trên heap, việc ghi tràn từ chunk này có thể ghi đè lên metadata hoặc user data của chunk liền sau. Các metadata quan trọng có thể bị ghi đè bao gồm trường \texttt{size} (để giả mạo kích thước chunk, khai thác logic bugs hoặc bypass các checks), con trỏ \texttt{fd} (để thực hiện tcache/fastbin poisoning), và cặp con trỏ \texttt{fd}/\texttt{bk} (để thực hiện các kỹ thuật như unlink attack hoặc leak addresses). Heap buffer overflow thường được kết hợp với các lỗ hổng khác như use-after-free hoặc logic bugs để tạo thành chuỗi khai thác hoàn chỉnh.
+
+\subsection{Tcache Poisoning}
+
+Tcache poisoning là kỹ thuật khai thác heap phổ biến nhằm kiểm soát việc allocation để \texttt{malloc()} trả về một chunk tại địa chỉ tùy ý mà kẻ tấn công chọn. Tcache bin hoạt động như một singly-linked list, với mỗi chunk có con trỏ \texttt{fd} trỏ đến chunk tiếp theo. Khi \texttt{malloc()} được gọi với kích thước phù hợp, ptmalloc lấy chunk đầu tiên ra khỏi bin, đọc con trỏ \texttt{fd} của chunk này để biết chunk tiếp theo, cập nhật head của bin, rồi trả về chunk cho chương trình. Nếu kẻ tấn công có khả năng ghi đè con trỏ \texttt{fd} của chunk trong tcache (thông qua use-after-free hoặc heap overflow) để trỏ đến một địa chỉ target bất kỳ, lần \texttt{malloc()} tiếp theo sẽ coi địa chỉ target là một chunk hợp lệ và trả về địa chỉ đó, cho phép kẻ tấn công ghi dữ liệu vào vị trí mong muốn.
+
+\subsection{Security Mitigations}
+
+GLIBC hiện đại triển khai nhiều cơ chế bảo vệ để ngăn chặn khai thác heap, bao gồm double-free detection thông qua tcache key, Safe-Linking (từ GLIBC 2.32), loại bỏ malloc hooks (từ GLIBC 2.34), kiểm tra chunk alignment, và phát hiện metadata corruption như kiểm tra PREV\_INUSE bit và tính nhất quán của size. Tuy nhiên, các cơ chế bảo vệ này không hoàn toàn ngăn chặn được các khai thác tinh vi, đặc biệt khi được kết hợp với lỗ hổng logic.
 
 \clearpage
 \section{Initial Reconnaissance}
@@ -1167,6 +1236,9 @@ Mã khai thác đã thành công mở shell và chiếm quyền điều khiển 
     \includegraphics[width=\textwidth]{images/image-31.png}
     \caption{Thành công mở shell và chiếm quyền điều khiển}
 \end{figure}
+
+\clearpage
+\section{Mitigations}
 
 \clearpage
 \section{Conclusion}
