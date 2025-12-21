@@ -1,0 +1,21 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {I.}Introduction}{2}{section.0.1}%
+\contentsline {section}{\numberline {II.}Background}{3}{section.0.2}%
+\contentsline {section}{\numberline {III.}Initial Reconnaissance}{4}{section.0.3}%
+\contentsline {subsection}{\numberline {3.1.}GLIBC Version}{4}{subsection.0.3.1}%
+\contentsline {subsection}{\numberline {3.2.}Binary Mitigations}{5}{subsection.0.3.2}%
+\contentsline {section}{\numberline {IV.}Pseudocode Review}{7}{section.0.4}%
+\contentsline {subsection}{\numberline {4.1.}\colorbox {codebg}{\textcolor {codetext}{\texttt {rune}}} Struct}{7}{subsection.0.4.1}%
+\contentsline {subsection}{\numberline {4.2.}\colorbox {codebg}{\textcolor {codetext}{\texttt {main()}}} Function}{7}{subsection.0.4.2}%
+\contentsline {subsection}{\numberline {4.3.}\colorbox {codebg}{\textcolor {codetext}{\texttt {setup()}}} Function}{8}{subsection.0.4.3}%
+\contentsline {subsection}{\numberline {4.4.}\colorbox {codebg}{\textcolor {codetext}{\texttt {create()}}} Function}{9}{subsection.0.4.4}%
+\contentsline {subsection}{\numberline {4.5.}\colorbox {codebg}{\textcolor {codetext}{\texttt {hash()}}} Function}{10}{subsection.0.4.5}%
+\contentsline {subsection}{\numberline {4.6.}\colorbox {codebg}{\textcolor {codetext}{\texttt {delete()}}} Function}{11}{subsection.0.4.6}%
+\contentsline {subsection}{\numberline {4.7.}\colorbox {codebg}{\textcolor {codetext}{\texttt {show()}}} Function}{11}{subsection.0.4.7}%
+\contentsline {subsection}{\numberline {4.8.}\colorbox {codebg}{\textcolor {codetext}{\texttt {edit()}}} Function}{12}{subsection.0.4.8}%
+\contentsline {section}{\numberline {V.}Exploitation}{16}{section.0.5}%
+\contentsline {subsection}{\numberline {5.1.}Leaking Heap Address}{18}{subsection.0.5.1}%
+\contentsline {subsection}{\numberline {5.2.}Leaking Libc Address}{20}{subsection.0.5.2}%
+\contentsline {subsection}{\numberline {5.3.}Remote Code Execution}{24}{subsection.0.5.3}%
+\contentsline {section}{\numberline {VI.}Conclusion}{34}{section.0.6}%
+\contentsline {section}{\numberline {VII.}References}{35}{section.0.7}%

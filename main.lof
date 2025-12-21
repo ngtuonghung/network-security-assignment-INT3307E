@@ -1,0 +1,32 @@
+\babel@toc {english}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Các file được cung cấp}}{6}{figure.0.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Xác định phiên bản GLIBC}}{7}{figure.0.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Kết quả checksec}}{7}{figure.0.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Cấu trúc \colorbox {codebg}{\textcolor {codetext}{\texttt {rune}}}}}{9}{figure.0.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Mối quan hệ giữa mảng con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt {MainTable}}} và mảng dữ liệu \colorbox {codebg}{\textcolor {codetext}{\texttt {items}}}}}{11}{figure.0.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Cái nhìn tổng quát về một \colorbox {codebg}{\textcolor {codetext}{\texttt {rune}}}}}{12}{figure.0.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Trạng thái ban đầu: Rune A trỏ đến chunk C, Rune B chưa có chunk}}{15}{figure.0.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Sau khi sao chép con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt {content}}} và \colorbox {codebg}{\textcolor {codetext}{\texttt {length}}} từ Rune A sang Rune B}}{15}{figure.0.8}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Sau khi xóa nội dung Rune A (memset về NULL)}}{16}{figure.0.9}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Tính \colorbox {codebg}{\textcolor {codetext}{\texttt {current\_index}}} dựa trên \colorbox {codebg}{\textcolor {codetext}{\texttt {hash(content)}}} và ghi dữ liệu vào \colorbox {codebg}{\textcolor {codetext}{\texttt {content + 8}}}}}{16}{figure.0.10}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Ví dụ minh họa: Trạng thái ban đầu với hai rune có tên \colorbox {codebg}{\textcolor {codetext}{\texttt {\textbackslash x01}}} và \colorbox {codebg}{\textcolor {codetext}{\texttt {\textbackslash x02}}}}}{17}{figure.0.11}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Sau khi edit với \colorbox {codebg}{\textcolor {codetext}{\texttt {new\_name}}} chứa NULL byte, \colorbox {codebg}{\textcolor {codetext}{\texttt {strcpy()}}} chỉ sao chép đến \colorbox {codebg}{\textcolor {codetext}{\texttt {\textbackslash x02}}}}}{17}{figure.0.12}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Ví dụ chạy script khai thác}}{19}{figure.0.13}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Tcache bin entry size 0x20}}{21}{figure.0.14}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Xác nhận heap base address}}{22}{figure.0.15}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Lỗi double free khi giải phóng chunk 6}}{23}{figure.0.16}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Xác nhận libc base address}}{26}{figure.0.17}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Full RELRO trong binary và Partial RELRO trong libc}}{26}{figure.0.18}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Danh sách các GOT entry trong libc}}{27}{figure.0.19}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt {strcpy()}}}}}{28}{figure.0.20}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt {free()}}}}}{29}{figure.0.21}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt {puts()}}}}}{30}{figure.0.22}%
+\contentsline {figure}{\numberline {23}{\ignorespaces PLT entry trong \colorbox {codebg}{\textcolor {codetext}{\texttt {puts()}}}}}{30}{figure.0.23}%
+\contentsline {figure}{\numberline {24}{\ignorespaces GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt {strlen()}}}}}{31}{figure.0.24}%
+\contentsline {figure}{\numberline {25}{\ignorespaces Trạng thái tcache bin trước khi ghi đè}}{32}{figure.0.25}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Ghi đè con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt {fd}}} đến \colorbox {codebg}{\textcolor {codetext}{\texttt {strlen()}}} GOT entry}}{33}{figure.0.26}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Chương trình bị crash với lỗi SIGSEGV}}{33}{figure.0.27}%
+\contentsline {figure}{\numberline {28}{\ignorespaces GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt {strlen()}}} bị ghi đè thành NULL}}{34}{figure.0.28}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Hành vi của ptmalloc khi cấp phát từ tcache bin}}{34}{figure.0.29}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Ghi đè thành công GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt {strlen()}}} với địa chỉ \colorbox {codebg}{\textcolor {codetext}{\texttt {system()}}}}}{35}{figure.0.30}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Thành công mở shell và chiếm quyền điều khiển}}{35}{figure.0.31}%
