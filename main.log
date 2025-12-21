@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.12.15)  21 DEC 2025 18:52
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.12.15)  21 DEC 2025 21:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -448,12 +448,7 @@ File: images/image-5.png Graphic file (type bmp)
  [13]
 File: images/image-6.png Graphic file (type bmp)
 <images/image-6.png>
-
-Overfull \hbox (12.99081pt too wide) in paragraph at lines 516--517
-\TU/lmr/m/n/10.95 trường hợp [][][][][][] lớn hơn [][][][][][], lệnh [][][][][][]
- []
-
-[14] (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
+ [14] (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 ) [15
 
@@ -474,74 +469,4 @@ Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
 Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
 Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
 Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-[22]
-File: images/image-17.png Graphic file (type bmp)
-<images/image-17.png>
-File: images/image-18.png Graphic file (type bmp)
-<images/image-18.png>
-File: images/image-19.png Graphic file (type bmp)
-<images/image-19.png>
- [23]
-File: images/image-20.png Graphic file (type bmp)
-<images/image-20.png>
- [24]
-File: images/image-21.png Graphic file (type bmp)
-<images/image-21.png>
- [25]
-File: images/image-22.png Graphic file (type bmp)
-<images/image-22.png>
- [26]
-File: images/image-23.png Graphic file (type bmp)
-<images/image-23.png>
-File: images/image-24.png Graphic file (type bmp)
-<images/image-24.png>
- [27] [28] (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2025/11/14 1.11b listings language file
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2025/11/14 1.11b listings language file
-)
-Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-Missing character: There is no ► (U+25BA) in font [lmmono10-regular]:!
-File: images/image-25.png Graphic file (type bmp)
-<images/image-25.png>
-[29]
-File: images/image-26.png Graphic file (type bmp)
-<images/image-26.png>
-File: images/image-27.png Graphic file (type bmp)
-<images/image-27.png>
-File: images/image-28.png Graphic file (type bmp)
-<images/image-28.png>
- [30]
-File: images/image-29.png Graphic file (type bmp)
-<images/image-29.png>
-File: images/image-30.png Graphic file (type bmp)
-<images/image-30.png>
- [31]
-File: images/image-31.png Graphic file (type bmp)
-<images/image-31.png>
- [32] [33
-
-] [34
-
-] (./main.aux)
- ***********
-LaTeX2e <2025-11-01>
-L3 programming layer <2025-11-14>
- ***********
-Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: E2E8B68EE7FC137B990DEC4B52B56F24;2745.
- ) 
-Here is how much of TeX's memory you used:
- 14352 strings out of 470152
- 227936 string characters out of 5477354
- 1195258 words of memory out of 5000000
- 42733 multiletter control sequences out of 15000+600000
- 632751 words of font info for 72 fonts, out of 8000000 for 9000
- 36 hyphenation exceptions out of 8191
- 108i,6n,107p,744b,1945s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-Output written on main.pdf (36 pages).
+Missing character: There is no ► (U+25
