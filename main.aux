@@ -12,64 +12,63 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.1.}Pwn Challenge: Runic}{3}{subsection.0.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.2.}Lỗ hổng chính}{3}{subsection.0.1.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.3.}Phương pháp và công cụ}{3}{subsection.0.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.4.}Sử dụng AI trong tài liệu}{4}{subsection.0.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {II.}Background}{5}{section.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.}Ptmalloc và Heap Chunk Structure}{5}{subsection.0.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.}Heap Allocation và Deallocation}{5}{subsection.0.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.}Tcache Bins}{5}{subsection.0.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.}Unsorted Bin}{6}{subsection.0.2.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.}Other Bins}{6}{subsection.0.2.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.}Heap Buffer Overflow}{6}{subsection.0.2.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.7.}Tcache Poisoning}{6}{subsection.0.2.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.8.}Security Mitigations}{6}{subsection.0.2.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {III.}Initial Reconnaissance}{7}{section.0.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Các file được cung cấp}}{7}{figure.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.}GLIBC Version}{7}{subsection.0.3.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Xác định phiên bản GLIBC}}{8}{figure.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.}Binary Mitigations}{8}{subsection.0.3.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Kết quả checksec}}{8}{figure.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {IV.}Pseudocode Review}{10}{section.0.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}} Struct}{10}{subsection.0.4.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Cấu trúc \colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}}}}{10}{figure.0.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {main()}}} Function}{10}{subsection.0.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {setup()}}} Function}{11}{subsection.0.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Mối quan hệ giữa mảng con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {MainTable}}} và mảng dữ liệu \colorbox {codebg}{\textcolor {codetext}{\texttt  {items}}}}}{12}{figure.0.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {create()}}} Function}{12}{subsection.0.4.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Cái nhìn tổng quát về một \colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}}}}{13}{figure.0.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {hash()}}} Function}{13}{subsection.0.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {delete()}}} Function}{14}{subsection.0.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {show()}}} Function}{14}{subsection.0.4.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {edit()}}} Function}{15}{subsection.0.4.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Trạng thái ban đầu: Rune A trỏ đến chunk C, Rune B chưa có chunk}}{16}{figure.0.7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Sau khi sao chép con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {content}}} và \colorbox {codebg}{\textcolor {codetext}{\texttt  {length}}} từ Rune A sang Rune B}}{16}{figure.0.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Sau khi xóa nội dung Rune A (memset về NULL)}}{17}{figure.0.9}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Tính \colorbox {codebg}{\textcolor {codetext}{\texttt  {current\_index}}} dựa trên \colorbox {codebg}{\textcolor {codetext}{\texttt  {hash(content)}}} và ghi dữ liệu vào \colorbox {codebg}{\textcolor {codetext}{\texttt  {content + 8}}}}}{17}{figure.0.10}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Ví dụ minh họa: Trạng thái ban đầu với hai rune có tên \colorbox {codebg}{\textcolor {codetext}{\texttt  {\textbackslash x01}}} và \colorbox {codebg}{\textcolor {codetext}{\texttt  {\textbackslash x02}}}}}{18}{figure.0.11}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Sau khi edit với \colorbox {codebg}{\textcolor {codetext}{\texttt  {new\_name}}} chứa NULL byte, \colorbox {codebg}{\textcolor {codetext}{\texttt  {strcpy()}}} chỉ sao chép đến \colorbox {codebg}{\textcolor {codetext}{\texttt  {\textbackslash x02}}}}}{18}{figure.0.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {V.}Exploitation}{19}{section.0.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Ví dụ chạy script khai thác}}{20}{figure.0.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.}Leaking Heap Address}{21}{subsection.0.5.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Tcache bin entry size 0x20}}{22}{figure.0.14}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Xác nhận heap base address}}{23}{figure.0.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.}Leaking Libc Address}{23}{subsection.0.5.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Lỗi double free khi giải phóng chunk 6}}{24}{figure.0.16}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Xác nhận libc base address}}{27}{figure.0.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.}Remote Code Execution}{27}{subsection.0.5.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Full RELRO trong binary và Partial RELRO trong libc}}{27}{figure.0.18}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces Danh sách các GOT entry trong libc}}{28}{figure.0.19}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt  {strcpy()}}}}}{29}{figure.0.20}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt  {free()}}}}}{30}{figure.0.21}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt  {puts()}}}}}{31}{figure.0.22}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces PLT entry trong \colorbox {codebg}{\textcolor {codetext}{\texttt  {puts()}}}}}{31}{figure.0.23}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}}}}{32}{figure.0.24}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces Trạng thái tcache bin trước khi ghi đè}}{33}{figure.0.25}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces Ghi đè con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {fd}}} đến \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}} GOT entry}}{34}{figure.0.26}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces Chương trình bị crash với lỗi SIGSEGV}}{34}{figure.0.27}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}} bị ghi đè thành NULL}}{35}{figure.0.28}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces Hành vi của ptmalloc khi cấp phát từ tcache bin}}{35}{figure.0.29}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {30}{\ignorespaces Ghi đè thành công GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}} với địa chỉ \colorbox {codebg}{\textcolor {codetext}{\texttt  {system()}}}}}{36}{figure.0.30}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {31}{\ignorespaces Thành công mở shell và chiếm quyền điều khiển}}{36}{figure.0.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {VI.}Mitigations}{37}{section.0.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {VII.}Conclusion}{38}{section.0.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {VIII.}References}{39}{section.0.8}\protected@file@percent }
-\gdef \@abspage@last{41}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.4.}Sử dụng AI trong tài liệu}{3}{subsection.0.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II.}Background}{4}{section.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.}Ptmalloc và Heap Chunk Structure}{4}{subsection.0.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.}Heap Allocation và Deallocation}{4}{subsection.0.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.}Tcache Bins}{4}{subsection.0.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.}Unsorted Bin}{5}{subsection.0.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.}Heap Buffer Overflow}{5}{subsection.0.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.}Tcache Poisoning}{5}{subsection.0.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7.}Security Mitigations}{5}{subsection.0.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III.}Initial Reconnaissance}{6}{section.0.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Các file được cung cấp}}{6}{figure.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.}GLIBC Version}{6}{subsection.0.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Xác định phiên bản GLIBC}}{7}{figure.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.}Binary Mitigations}{7}{subsection.0.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Kết quả checksec}}{7}{figure.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV.}Pseudocode Review}{9}{section.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}} Struct}{9}{subsection.0.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Cấu trúc \colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}}}}{9}{figure.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {main()}}} Function}{9}{subsection.0.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {setup()}}} Function}{10}{subsection.0.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Mối quan hệ giữa mảng con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {MainTable}}} và mảng dữ liệu \colorbox {codebg}{\textcolor {codetext}{\texttt  {items}}}}}{11}{figure.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {create()}}} Function}{11}{subsection.0.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Cái nhìn tổng quát về một \colorbox {codebg}{\textcolor {codetext}{\texttt  {rune}}}}}{12}{figure.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {hash()}}} Function}{12}{subsection.0.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {delete()}}} Function}{13}{subsection.0.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {show()}}} Function}{13}{subsection.0.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.}\colorbox {codebg}{\textcolor {codetext}{\texttt  {edit()}}} Function}{14}{subsection.0.4.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Trạng thái ban đầu: Rune A trỏ đến chunk C, Rune B chưa có chunk}}{15}{figure.0.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Sau khi sao chép con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {content}}} và \colorbox {codebg}{\textcolor {codetext}{\texttt  {length}}} từ Rune A sang Rune B}}{15}{figure.0.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Sau khi xóa nội dung Rune A (memset về NULL)}}{16}{figure.0.9}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Tính \colorbox {codebg}{\textcolor {codetext}{\texttt  {current\_index}}} dựa trên \colorbox {codebg}{\textcolor {codetext}{\texttt  {hash(content)}}} và ghi dữ liệu vào \colorbox {codebg}{\textcolor {codetext}{\texttt  {content + 8}}}}}{16}{figure.0.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Ví dụ minh họa: Trạng thái ban đầu với hai rune có tên \colorbox {codebg}{\textcolor {codetext}{\texttt  {\textbackslash x01}}} và \colorbox {codebg}{\textcolor {codetext}{\texttt  {\textbackslash x02}}}}}{17}{figure.0.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Sau khi edit với \colorbox {codebg}{\textcolor {codetext}{\texttt  {new\_name}}} chứa NULL byte, \colorbox {codebg}{\textcolor {codetext}{\texttt  {strcpy()}}} chỉ sao chép đến \colorbox {codebg}{\textcolor {codetext}{\texttt  {\textbackslash x02}}}}}{17}{figure.0.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V.}Exploitation}{18}{section.0.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Ví dụ chạy script khai thác}}{19}{figure.0.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.}Leaking Heap Address}{20}{subsection.0.5.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Tcache bin entry size 0x20}}{21}{figure.0.14}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Xác nhận heap base address}}{22}{figure.0.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.}Leaking Libc Address}{22}{subsection.0.5.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Lỗi double free khi giải phóng chunk 6}}{23}{figure.0.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Xác nhận libc base address}}{26}{figure.0.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.}Remote Code Execution}{26}{subsection.0.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Full RELRO trong binary và Partial RELRO trong libc}}{26}{figure.0.18}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces Danh sách các GOT entry trong libc}}{27}{figure.0.19}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt  {strcpy()}}}}}{28}{figure.0.20}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt  {free()}}}}}{29}{figure.0.21}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Disassembly hàm \colorbox {codebg}{\textcolor {codetext}{\texttt  {puts()}}}}}{30}{figure.0.22}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces PLT entry trong \colorbox {codebg}{\textcolor {codetext}{\texttt  {puts()}}}}}{30}{figure.0.23}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}}}}{31}{figure.0.24}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces Trạng thái tcache bin trước khi ghi đè}}{32}{figure.0.25}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces Ghi đè con trỏ \colorbox {codebg}{\textcolor {codetext}{\texttt  {fd}}} đến \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}} GOT entry}}{33}{figure.0.26}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces Chương trình bị crash với lỗi SIGSEGV}}{33}{figure.0.27}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}} bị ghi đè thành NULL}}{34}{figure.0.28}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces Hành vi của ptmalloc khi cấp phát từ tcache bin}}{34}{figure.0.29}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {30}{\ignorespaces Ghi đè thành công GOT entry của \colorbox {codebg}{\textcolor {codetext}{\texttt  {strlen()}}} với địa chỉ \colorbox {codebg}{\textcolor {codetext}{\texttt  {system()}}}}}{35}{figure.0.30}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {31}{\ignorespaces Thành công mở shell và chiếm quyền điều khiển}}{35}{figure.0.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI.}Mitigations}{36}{section.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VII.}Conclusion}{37}{section.0.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VIII.}References}{38}{section.0.8}\protected@file@percent }
+\gdef \@abspage@last{40}
