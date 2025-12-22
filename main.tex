@@ -64,7 +64,7 @@
 \maketitle
 
 \begin{abstract}
-Your abstract.
+Đồ án này trình bày quá trình phân tích và khai thác lỗ hổng bảo mật trong thử thách Runic thuộc HTB Cyber Apocalypse CTF 2023, một chương trình C 64-bit được bảo vệ bởi các cơ chế hiện đại như ASLR, NX, PIE và Full RELRO. Thông qua reverse engineering và code review, xác định lỗ hổng heap buffer overflow phát sinh từ việc sử dụng không an toàn hàm \texttt{strcpy()} kết hợp với \texttt{read()} trong quá trình xử lý input chứa NULL bytes, dẫn đến hash confusion. Khai thác lỗ hổng này, kẻ tấn công có thể thực hiện tcache poisoning để leak địa chỉ heap và libc, bypass ASLR, sau đó ghi đè GOT entry của \texttt{strlen()} trong libc thành \texttt{system()}, cuối cùng đạt được Remote Code Execution. Đồ án minh họa chi tiết chuỗi tấn công hoàn chỉnh và đề xuất các biện pháp phòng thủ như sử dụng \texttt{memcpy()} và validate input nghiêm ngặt.
 \end{abstract}
 
 \clearpage
@@ -77,7 +77,7 @@ HTB Cyber Apocalypse CTF 2023: The Cursed Mission là sự kiện Capture The Fl
 
 \subsection{Pwn Challenge: Runic}
 
-Đồ án này tập trung vào việc phân tích Runic, một trong những thử thách thuộc mảng Binary Exploitation của cuộc thi. Runic là một chương trình C 64-bit sử dụng ptmalloc (GLIBC malloc implementation) để quản lý cấp phát động, được bảo vệ bởi các cơ chế bảo mật hiện đại như ASLR, NX, Full RELRO, và PIE. Thử thách yêu cầu người chơi phát hiện và khai thác các lỗ hổng trong chương trình và bypass các cơ chế bảo vệ này, cuối cùng đạt được Remote Code Execution và thu thập flag. Đồ án trình bày chi tiết quá trình phân tích, phát hiện lỗ hổng, xây dựng exploit, cho đến việc thực thi chuỗi tấn công hoàn chỉnh.
+Đồ án này tập trung vào việc phân tích Runic, một trong những thử thách thuộc mảng Binary Exploitation của cuộc thi. Runic là một chương trình C 64-bit sử dụng ptmalloc (GLIBC malloc implementation) để quản lý cấp phát động, được bảo vệ bởi các cơ chế bảo mật hiện đại như ASLR, NX, Full RELRO, và PIE. Thử thách yêu cầu người chơi phát hiện và khai thác các lỗ hổng trong chương trình và bypass các cơ chế bảo vệ này, cuối cùng đạt được Remote Code Execution và thu thập flag. Đồ án trình bày chi tiết quá trình phân tích, phát hiện lỗ hổng, xây dựng exploit, cho đến việc thực thi chuỗi tấn công hoàn chỉnh, và cuối cùng là các biện pháp giảm thiểu.
 
 \subsection{Lỗ hổng chính}
 
@@ -1295,6 +1295,12 @@ Cách tiếp cận này đọc từng byte một trong vòng lặp, kiểm tra n
 
 \clearpage
 \section{Conclusion}
+
+Đồ án này đã trình bày quá trình phân tích và khai thác thành công thử thách Runic từ HTB Cyber Apocalypse CTF 2023, minh họa một chuỗi tấn công hoàn chỉnh nhằm bypass các cơ chế bảo vệ hiện đại của GLIBC 2.34. Lỗ hổng cốt lõi nằm ở việc kết hợp không an toàn giữa \texttt{read()} và \texttt{strcpy()} trong hàm \texttt{edit()}, dẫn đến hash confusion và heap buffer overflow khi xử lý input chứa NULL bytes.
+
+Thông qua kỹ thuật heap exploitation tinh vi bao gồm tcache poisoning, unsorted bin manipulation, và GOT overwrite trong libc, kẻ tấn công có thể đạt được Remote Code Execution mặc dù chương trình được bảo vệ bởi ASLR, NX, PIE và Full RELRO. Quá trình khai thác đòi hỏi hiểu biết về cấu trúc, cơ chế hoạt động của heap được ptmalloc triển khai, cũng như cơ chế bảo vệ Safe-Linking, và khả năng xây dựng primitives như Arbitrary Address Read/Write.
+
+Đồ án nhấn mạnh tầm quan trọng của việc xử lý input một cách an toàn, đặc biệt khi làm việc với dữ liệu binary có thể chứa NULL bytes. Các biện pháp phòng thủ được đề xuất như sử dụng \texttt{memcpy()} hoặc validate input nghiêm ngặt có thể ngăn chặn hoàn toàn lỗ hổng này.
 
 \clearpage
 \section{References}
