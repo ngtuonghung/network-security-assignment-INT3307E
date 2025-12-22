@@ -29,5 +29,7 @@
 \contentsline {subsection}{\numberline {5.2.}Leaking Libc Address}{22}{subsection.0.5.2}%
 \contentsline {subsection}{\numberline {5.3.}Remote Code Execution}{26}{subsection.0.5.3}%
 \contentsline {section}{\numberline {VI.}Mitigations}{36}{section.0.6}%
+\contentsline {subsection}{\numberline {6.1.}Sử dụng \colorbox {codebg}{\textcolor {codetext}{\texttt {memcpy()}}} thay vì \colorbox {codebg}{\textcolor {codetext}{\texttt {strcpy()}}}}{36}{subsection.0.6.1}%
+\contentsline {subsection}{\numberline {6.2.}Stop at NULL Byte}{36}{subsection.0.6.2}%
 \contentsline {section}{\numberline {VII.}Conclusion}{37}{section.0.7}%
 \contentsline {section}{\numberline {VIII.}References}{38}{section.0.8}%

@@ -52,7 +52,8 @@
 }
 
 \title{
-    \huge đồ án đồ án môn An toàn và an ninh mạng\\
+    \includegraphics[width=0.2\textwidth]{images/uet.png}\\[1em]
+    \huge Báo cáo đồ án môn An toàn và an ninh mạng\\
     \large Lớp học phần: INT3307E 1\\
     \large Giảng viên: TS. Nguyễn Đại Thọ
 }
@@ -80,7 +81,7 @@ HTB Cyber Apocalypse CTF 2023: The Cursed Mission là sự kiện Capture The Fl
 
 \subsection{Lỗ hổng chính}
 
-Lỗ hổng cốt lõi trong Runic nằm ở việc xử lý chuỗi ký tự không đúng cách (improper string handling), cụ thể là trong quá trình tính toán độ dài chuỗi. Khi chương trình sử dụng hàm \texttt{strlen()} để xác định kích thước dữ liệu cần xử lý, nếu dữ liệu đầu vào không được NULL-terminated hoặc chứa NULL bytes ở vị trí không mong đợi, \texttt{strlen()} sẽ trả về độ dài sai lệch so với kích thước thực tế mong muốn. Điều này dẫn đến heap buffer overflow - một lỗ hổng cho phép ghi dữ liệu vượt quá ranh giới chunk và ghi đè metadata của các chunks liền kề.
+Lỗ hổng cốt lõi trong Runic nằm ở việc xử lý chuỗi ký tự không đúng cách (improper string handling), cụ thể là trong quá trình sao chép chuỗi. Khi chương trình sử dụng hàm \texttt{strcpy()} để sao chép dữ liệu đầu vào vào buffer, nếu dữ liệu không được NULL-terminated hoặc chứa NULL bytes ở vị trí không mong đợi, \texttt{strcpy()} sẽ tiếp tục sao chép vượt quá ranh giới buffer đã cấp phát hoặc sao chép thiếu dữ liệu ban đầu. Điều này có thể dẫn đến heap buffer overflow - một lỗ hổng cho phép ghi dữ liệu vượt quá ranh giới chunk và ghi đè metadata của các chunks liền kề.
 
 Thông qua heap buffer overflow, kẻ tấn công có thể thao túng các metadata quan trọng của ptmalloc như trường \texttt{size} và con trỏ \texttt{fd} trong free chunks, cho phép thực hiện các kỹ thuật khai thác tinh vi như tcache poisoning và unsorted bin exploitation. Việc kiểm soát metadata này, kết hợp với khả năng bypass các cơ chế bảo vệ hiện đại của GLIBC, cuối cùng giúp kẻ tấn công đạt được hai primitives mạnh mẽ: Arbitrary Address Write (khả năng ghi dữ liệu vào địa chỉ bất kỳ) và Arbitrary Address Read (khả năng đọc dữ liệu từ địa chỉ bất kỳ). Với AAR, kẻ tấn công leak được các địa chỉ quan trọng như libc base và heap base để vượt qua ASLR. Với AAW, kẻ tấn công ghi đè các cấu trúc dữ liệu quan trọng như GOT entries hoặc các con trỏ hàm, từ đó chuyển hướng luồng thực thi của chương trình để đạt được Remote Code Execution (RCE) và thu thập flag.
 
@@ -1241,10 +1242,69 @@ Mã khai thác đã thành công mở shell và chiếm quyền điều khiển 
 \clearpage
 \section{Mitigations}
 
+Lỗ hổng trong chương trình Runic bắt nguồn từ việc sử dụng \texttt{strcpy()} kết hợp với \texttt{read()} để xử lý input chứa NULL bytes, dẫn đến hash confusion và heap buffer overflow. Để ngăn chặn lỗ hổng này, có thể áp dụng các biện pháp phòng thủ sau:
+
+\subsection{Sử dụng \texttt{memcpy()} thay vì \texttt{strcpy()}}
+
+Nếu chương trình cần xử lý dữ liệu binary có thể chứa NULL bytes ở giữa chuỗi (khi sử dụng \texttt{read()} để nhập tên), nên thay thế \texttt{strcpy()} bằng \texttt{memcpy()}:
+
+\begin{lstlisting}[language=C]
+// Thay vi:
+char new_name[8];
+read(0, new_name, 8);
+strcpy(content, new_name);  // Nguy hiem: dung lai khi gap NULL
+
+// Nen su dung:
+char new_name[8];
+ssize_t bytes_read = read(0, new_name, 8);
+if (bytes_read > 0) {
+    memcpy(content, new_name, bytes_read);  // Copy dung bytes_read bytes
+    content[bytes_read] = '\0';             // Them NULL terminator
+}
+\end{lstlisting}
+
+\texttt{memcpy()} sao chép chính xác số bytes được chỉ định mà không phụ thuộc vào NULL terminator, đảm bảo toàn bộ dữ liệu được copy đầy đủ. Tuy nhiên, cần đảm bảo kiểm tra giá trị trả về của \texttt{read()} để xác định số bytes thực sự đã đọc, validate tham số đích và nguồn của \texttt{memcpy()} để tránh buffer overflow, và đảm bảo buffer đích đủ lớn để chứa dữ liệu nguồn cộng với NULL terminator.
+
+\subsection{Stop at NULL Byte}
+
+Nếu chương trình muốn người dùng nhập chuỗi liền mạch không chứa NULL bytes ở giữa, nên triển khai cơ chế đọc input từng byte một và kiểm tra ngay lập tức:
+
+\begin{lstlisting}[language=C]
+char new_name[9];  // +1 cho NULL terminator
+int i = 0;
+
+// Doc tung byte mot, dung lai neu gap NULL
+for (i = 0; i < 8; i++) {
+    ssize_t result = read(0, &new_name[i], 1);
+    if (result <= 0) {
+        // Loi hoac EOF
+        break;
+    }
+    if (new_name[i] == '\0') {
+        // Gap NULL byte, dung lai
+        break;
+    }
+}
+new_name[i] = '\0';  // Them NULL terminator vao cuoi
+
+// Bay gio su dung strcpy() se an toan hon
+strcpy(content, new_name);
+\end{lstlisting}
+
+Cách tiếp cận này đọc từng byte một trong vòng lặp, kiểm tra ngay nếu gặp NULL byte thì dừng nhập, sau đó thêm NULL terminator vào cuối chuỗi. Điều này đảm bảo chuỗi luôn là NULL-terminated string hợp lệ không chứa NULL bytes ở giữa, loại bỏ hoàn toàn nguy cơ hash confusion khi sử dụng với \texttt{strcpy()}.
+
 \clearpage
 \section{Conclusion}
 
 \clearpage
 \section{References}
+
+\begin{enumerate}
+\item chovid99, ``Cyber Apocalypse 2023 - Pwn: Runic,'' 2023. [Online].\\Available: \href{https://chovid99.github.io/posts/cyber-apocalypse-2023-pwn/\#runic}{https://chovid99.github.io/posts/cyber-apocalypse-2023-pwn/}
+
+\item Enryuzz, ``HTB Cyber Apocalypse CTF 2023 - PWN: Runic Archive,'' GitHub, 2023. [Online].\\Available: \href{https://github.com/Enryuzz/CTF/tree/70b3f5ea05847c3757a3ed1f5601bd854d414f6e/2023/HTB_Cyber_Apocalypse_CTF/PWN/Runic}{GitHub Repository}
+
+\item HackTricks, ``Libc Heap - Binary Exploitation,'' HackTricks Wiki. [Online].\\Available: \href{https://book.hacktricks.wiki/en/binary-exploitation/libc-heap/index.html}{HackTricks Wiki}
+\end{enumerate}
 
 \end{document}
