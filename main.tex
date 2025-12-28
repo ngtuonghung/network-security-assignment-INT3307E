@@ -27,6 +27,7 @@
 \usepackage{fancyvrb}
 \usepackage{listings}
 \usepackage{float}
+\usepackage{tikz}
 
 % Define color for inline code
 \definecolor{codebg}{rgb}{0.95, 0.95, 0.95}
@@ -51,17 +52,74 @@
   columns=fullflexible
 }
 
-\title{
-    \includegraphics[width=0.2\textwidth]{images/uet.png}\\[1em]
-    \huge Báo cáo đồ án môn An toàn và an ninh mạng\\
-    \large Lớp học phần: INT3307E 1\\
-    \large Giảng viên: TS. Nguyễn Đại Thọ
-}
-
-\author{Nguyễn Tường Hùng – 23020078}
-
 \begin{document}
-\maketitle
+
+\begin{titlepage}
+
+% --- Khung viền trang ---
+\begin{tikzpicture}[remember picture,overlay]
+    % Khung viền ngoài
+    \draw[line width=3pt] 
+        ([xshift=1.5cm,yshift=-2cm]current page.north west) rectangle 
+        ([xshift=-1.5cm,yshift=2cm]current page.south east);
+    
+    % Khung viền trong (trang trí)
+    \draw[line width=1pt] 
+        ([xshift=2cm,yshift=-2.5cm]current page.north west) rectangle 
+        ([xshift=-2cm,yshift=2.5cm]current page.south east);
+\end{tikzpicture}
+
+% --- Thông tin trường và khoa ---
+\begin{center}
+    \vspace*{1cm}
+    {\fontsize{13pt}{16pt}\selectfont\bfseries ĐẠI HỌC QUỐC GIA HÀ NỘI} \\
+    \vspace{5pt}
+    {\fontsize{15pt}{18pt}\selectfont\bfseries TRƯỜNG ĐẠI HỌC CÔNG NGHỆ} \\
+    \vspace{10pt}
+    \center\includegraphics[width=3cm]{images/uet.png}
+    
+\end{center}
+
+\vfill
+
+% --- Tiêu đề tài liệu ---
+\begin{center}
+    {\fontsize{16pt}{20pt}\selectfont\bfseries BÁO CÁO ĐỒ ÁN MÔN HỌC} \\ 
+    \vspace{10pt}
+    {\fontsize{20pt}{24pt}\selectfont\bfseries AN TOÀN VÀ AN NINH MẠNG} \\
+\end{center}
+
+\vfill
+
+% --- Thông tin giảng viên và sinh viên ---
+\begin{center}
+    \normalcolor
+    \begin{minipage}{0.8\textwidth}
+        \centering
+        
+        {\fontsize{13pt}{16pt}\selectfont\bfseries Lớp học phần: INT3307E 1} \\
+        {\fontsize{13pt}{16pt}\selectfont\bfseries Giảng viên: TS. Nguyễn Đại Thọ} \\
+        \vspace{25pt}
+        {\fontsize{13pt}{16pt}\selectfont\bfseries Sinh viên thực hiện:}
+
+        \vspace{5pt}
+        \begin{tabular}{@{}l @{\hspace{1.5cm}} l}
+            \bfseries Họ và tên          & \bfseries MSSV \\
+            \hline
+            \bfseries Nguyễn Tường Hùng        & \bfseries 23020078 \\
+        \end{tabular}
+    \end{minipage}
+\end{center}
+
+\vfill
+
+% --- Ngày tháng và địa điểm ---
+\begin{center}
+    {\fontsize{13pt}{16pt}\selectfont\bfseries Hà Nội, ngày 24 tháng 12 năm 2025}
+\end{center}
+\vspace*{1cm}
+
+\end{titlepage}
 
 \begin{abstract}
 Đồ án này trình bày quá trình phân tích và khai thác lỗ hổng bảo mật trong thử thách Runic thuộc HTB Cyber Apocalypse CTF 2023, một chương trình C 64-bit được bảo vệ bởi các cơ chế hiện đại như ASLR, NX, PIE và Full RELRO. Thông qua reverse engineering và code review, xác định lỗ hổng heap buffer overflow phát sinh từ việc sử dụng không an toàn hàm \texttt{strcpy()} kết hợp với \texttt{read()} trong quá trình xử lý input chứa NULL bytes, dẫn đến hash confusion. Khai thác lỗ hổng này, kẻ tấn công có thể thực hiện tcache poisoning để leak địa chỉ heap và libc, bypass ASLR, sau đó ghi đè GOT entry của \texttt{strlen()} trong libc thành \texttt{system()}, cuối cùng đạt được Remote Code Execution. Đồ án minh họa chi tiết chuỗi tấn công hoàn chỉnh và đề xuất các biện pháp phòng thủ như sử dụng \texttt{memcpy()} và validate input nghiêm ngặt.
